@@ -1,0 +1,17 @@
+src/
+├── app/                  # Roteamento e Layouts (Server Components por padrão)
+│   ├── (auth)/           # Grupo de rotas para login/cadastro
+│   ├── (news)/           # Grupo de rotas principal de notícias
+│   │   ├── [category]/   # Rota dinâmica: /brasil, /mundo, /tecnologia
+│   │   │   └── [slug]/   # Rota do artigo: /brasil/noticia-exemplo
+│   │   └── page.tsx      # Home do site
+│   ├── layout.tsx        # Layout global (Navbar, Footer)
+│   └── globals.css       # Tailwind e estilos globais
+├── components/           # Componentes reutilizáveis
+│   ├── ui/               # Componentes atômicos (Button, Input, Card)
+│   ├── layout/           # Partes do layout (Header, Sidebar, Navigation)
+│   └── news/             # Componentes de negócio (ArticleGrid, FeaturedPost)
+├── lib/                  # Configurações de bibliotecas (Prisma, Apollo, SDKs)
+├── services/             # Chamadas de API e busca de dados (fetch do CMS)
+├── hooks/                # Hooks customizados (useScroll, useTheme)
+└── types/                # Definições de TypeScript

@@ -1,26 +1,48 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Vinculando as fontes do Next.js ao sistema do Tailwind v4 */
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+
+  /* Cores personalizadas para o estilo editorial */
+  --color-nyt-black: #121212;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    background-color: white;
+    color: var(--color-slate-900);
+    /* Usando a variável configurada no @theme */
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition-property: background-color, color;
+    transition-duration: 300ms;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .dark body {
+    background-color: #0f172a;
+    color: var(--color-slate-200);
+  }
+
+  /* Títulos com a fonte Playfair Display para o ar de jornal */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .container-clean {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* Utilitário para garantir que imagens de notícias tenham um aspecto profissional */
+  .news-image-hover {
+    @apply transition-opacity duration-300 hover:opacity-90;
+  }
 }
