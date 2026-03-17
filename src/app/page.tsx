@@ -44,7 +44,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950">
-      <div className="pb-20 pt-6 px-4 md:px-8 max-w-7xl mx-auto">
+      <div className="pb-36 md:pb-20 pt-6 px-4 md:px-8 max-w-7xl mx-auto">
         
         {carregando ? (
           /* SAI: Aquela frase simples de carregando

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AdBanner } from '@/components/layout/AdBanner';
+import { RadioDock } from '@/components/ui/RadioDock';
 
 type NewsItem = {
   id: string;
@@ -88,21 +89,28 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
         <div className="mb-8 border-b border-gray-100 pb-8">
           <Link href={`/noticia/${mancheteTopo.id}`} className="group">
             <span className="text-[#00427a] font-bold text-sm mb-2 block uppercase">{mancheteTopo.categoria}</span>
-            <h1 className="text-4xl md:text-5xl font-serif font-black leading-tight text-slate-900 group-hover:text-gray-600 transition-colors">
+            <h1 className="text-xl sm:text-2xl md:text-5xl font-serif font-black leading-tight text-slate-900 group-hover:text-gray-600 transition-colors">
               {limparHtmlTotal(mancheteTopo.titulo || "")}
             </h1>
+          </Link>
+
+          <div className="mb-6 xl:hidden">
+            <RadioDock />
+          </div>
+
+          <Link href={`/noticia/${mancheteTopo.id}`} className="group">
             <p className="text-gray-500 mt-2 text-lg line-clamp-2 font-medium">
-                {mancheteTopo.subtitulo || ""}
+              {mancheteTopo.subtitulo || ""}
             </p>
           </Link>
         </div>
       )}
 
       {/* 2. O GRID TRIPARTIDO (Layout do Meio) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-6 sm:gap-y-8 md:gap-y-10 lg:gap-x-8 mb-16">
         
         {/* COLUNA ESQUERDA (MATÉRIA ESCRITA - SÓ TEXTO) */}
-        <div className="lg:col-span-3 space-y-8">
+        <div className="order-3 lg:order-1 lg:col-span-3 space-y-8">
           {colunaEsquerda.map(n => (
             <Link key={n.id} href={`/noticia/${n.id}`} className="block group border-b border-gray-50 pb-4 last:border-0">
               <span className="text-[#00427a] font-bold text-[11px] mb-1 block uppercase">{n.categoria}</span>
@@ -113,7 +121,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
         </div>
 
         {/* MEIO (SLIDER) */}
-        <div className="lg:col-span-6">
+        <div className="order-2 lg:order-2 lg:col-span-6">
           {paraOSlider.length > 0 && (
             <div className="relative aspect-square md:aspect-video w-full overflow-hidden bg-slate-900 rounded-sm shadow-lg">
               {paraOSlider.map((item, index) => (
@@ -153,7 +161,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
         </div>
 
         {/* COLUNA DIREITA (ASSUNTOS COM FOTOS PEQUENAS) */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="order-3 lg:order-3 lg:col-span-3 space-y-6">
           {colunaDireita.map(n => (
             <Link key={n.id} href={`/noticia/${n.id}`} className="group block border-b border-gray-100 pb-6 last:border-0">
               <span className="text-[#00427a] font-bold text-[11px] mb-3 block uppercase">{n.categoria}</span>

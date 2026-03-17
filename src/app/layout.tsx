@@ -1,5 +1,4 @@
 import { ThemeProvider } from "@/components/theme-provider"; 
-import { RadioDock } from '@/components/ui/RadioDock'; 
 import './globals.css';
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -49,9 +48,6 @@ export default function RootLayout({
             {children}
             <Footer/>
           </main>
-
-          {/* O RADIO DOCK (Onde a mágica da rádio acontece) */}
-          <RadioDock />
 
           <footer className="border-t py-12 mt-20 bg-slate-50 dark:bg-slate-900/50 dark:border-slate-800">
             <div className="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm font-serif italic">

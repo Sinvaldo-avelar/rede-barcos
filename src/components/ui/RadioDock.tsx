@@ -37,28 +37,29 @@ export function RadioDock() {
   }
 
   return (
-    <div className="fixed top-1/2 right-0 -translate-y-1/2 w-fit z-100 
-                    flex flex-col xl:items-center gap-2 p-3 md:p-4 
+    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-xs z-100 
+                    flex flex-col xl:items-center gap-1 p-2 md:p-3 
                     bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl 
-                    rounded-[30px] xl:rounded-[45px] border border-slate-200 dark:border-white/10 shadow-2xl transition-all duration-500">
+                    rounded-[30px] xl:rounded-[45px] border border-slate-200 dark:border-white/10 shadow-2xl transition-all duration-500
+                    xl:fixed xl:top-1/2 xl:right-0 xl:-translate-y-1/2">
       
       {/* 🎙️ CHAMADA: Fica ao lado no mobile e em cima no PC */}
-      <div className="flex flex-row xl:flex-col items-center justify-center gap-2 mb-1 px-2">
-        <Volume2 size={14} className="text-blue-600 animate-pulse" />
-        <span className="text-[8px] md:text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-widest text-center leading-tight">
+      <div className="flex flex-row xl:flex-col items-center justify-center gap-1 mb-0.5 px-1">
+        <Volume2 size={12} className="text-blue-600 animate-pulse" />
+        <span className="text-[7px] md:text-[10px] font-black text-slate-800 dark:text-white uppercase tracking-widest text-center leading-tight">
           Ouça <br className="hidden xl:block" /> agora a sua <br />radio
         </span>
       </div>
 
       {/* 🚀 A MUDANÇA: flex-row no mobile | xl:flex-col no PC */}
-      <div className="flex flex-row xl:flex-col gap-3 md:gap-5">
+      <div className="flex flex-row xl:flex-col gap-2 md:gap-4">
         {RADIOS.map((radio) => (
           <div key={radio.id} className="relative group flex flex-col items-center">
             
             <button
               onClick={() => toggleRadio(radio)}
               /* Botão menor no mobile (h-14) para não esconder nada */
-              className={`relative h-14 w-14 md:h-20 md:w-20 xl:h-24 xl:w-24 rounded-full xl:rounded-4xl overflow-hidden transition-all duration-500 border-2 md:border-[3px] shadow-lg active:scale-95 bg-white
+              className={`relative h-11 w-11 md:h-18 md:w-18 xl:h-24 xl:w-24 rounded-full xl:rounded-4xl overflow-hidden transition-all duration-500 border-2 md:border-[3px] shadow-lg active:scale-95 bg-white
                 ${playingId === radio.id 
                   ? 'border-blue-500 scale-105' 
                   : 'border-slate-100 hover:border-blue-400'
@@ -68,7 +69,7 @@ export function RadioDock() {
                 src={radio.logo}
                 alt={radio.name}
                 fill
-                className={`object-contain p-2 md:p-4 transition-all duration-700 
+                className={`object-contain p-1.5 md:p-3 transition-all duration-700 
                   ${playingId === radio.id ? 'brightness-75' : 'brightness-100'}`}
               />
 
@@ -81,7 +82,7 @@ export function RadioDock() {
                   </div>
                 ) : (
                   <div className="bg-black/10 inset-0 absolute opacity-0 group-hover:opacity-100 flex items-center justify-center">
-                    <Play className="text-blue-600 fill-blue-600 w-5 h-5 md:w-8 md:h-8" />
+                    <Play className="text-blue-600 fill-blue-600 w-4 h-4 md:w-7 md:h-7" />
                   </div>
                 )}
               </div>
