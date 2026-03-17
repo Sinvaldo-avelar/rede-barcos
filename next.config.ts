@@ -4,10 +4,6 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Ignora avisos de ESLint durante o build
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 
   allowedDevOrigins: ['192.168.100.13', 'localhost'],
 
