@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { 
@@ -11,8 +12,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+type BannerItem = {
+  id: string;
+  nome?: string;
+  titulo?: string;
+  nome_banner?: string;
+  posicao?: string | null;
+  imagem_url?: string;
+  imagem?: string;
+  url_imagem?: string;
+  link_url?: string;
+  link_destino?: string;
+};
+
 export default function ListaBanners() {
-  const [banners, setBanners] = useState<any[]>([]);
+  const [banners, setBanners] = useState<BannerItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const extrairBucketECaminho = (publicUrl: string) => {
@@ -54,8 +68,9 @@ export default function ListaBanners() {
 
       if (error) throw error;
       if (data) setBanners(data);
-    } catch (error: any) {
-      alert("Erro ao carregar banners: " + error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Erro desconhecido";
+      alert("Erro ao carregar banners: " + message);
     } finally {
       setLoading(false);
     }
@@ -87,8 +102,9 @@ export default function ListaBanners() {
 
       // Atualiza a lista na tela
       setBanners(banners.filter(b => b.id !== id));
-    } catch (error: any) {
-      alert("Erro ao eliminar: " + error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Erro desconhecido";
+      alert("Erro ao eliminar: " + message);
     }
   }
 
@@ -131,12 +147,18 @@ export default function ListaBanners() {
               >
                 <div className="flex flex-col md:flex-row items-center gap-4 w-full">
                   {/* Preview da Imagem */}
-                  <div className="w-full md:w-48 h-24 bg-slate-100 rounded-xl overflow-hidden border border-slate-100">
-                    <img 
-                      src={imagemExibicao} 
-                      className="w-full h-full object-cover" 
-                      alt={tituloExibicao} 
-                    />
+                  <div className="relative w-full md:w-48 h-24 bg-slate-100 rounded-xl overflow-hidden border border-slate-100">
+                    {imagemExibicao ? (
+                      <Image 
+                        src={imagemExibicao} 
+                        fill
+                        unoptimized
+                        className="object-cover" 
+                        alt={tituloExibicao} 
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">Sem imagem</div>
+                    )}
                   </div>
 
                   <div className="flex-1 text-center md:text-left">

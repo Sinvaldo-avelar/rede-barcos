@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useParams, useRouter } from "next/navigation";
@@ -7,8 +8,9 @@ import { Save, ArrowLeft, Image as ImageIcon, Bold, Italic, List, ListOrdered, Q
 import Link from "next/link";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import type { Editor } from "@tiptap/react";
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) return null;
 
   const btnClass = (active: boolean) =>
@@ -124,8 +126,9 @@ export default function EditarNoticiaPage() {
 
       setImagemUrl(urlData.publicUrl);
       setPreviewUrl(URL.createObjectURL(file));
-    } catch (error: any) {
-      alert("Erro no upload: " + (error.message || "Verifique o console"));
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Verifique o console";
+      alert("Erro no upload: " + message);
     } finally {
       setUploading(false);
     }
@@ -247,9 +250,9 @@ export default function EditarNoticiaPage() {
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
               <label className="block text-[10px] font-bold uppercase text-slate-400 mb-4 tracking-widest">Foto de Capa da Notícia</label>
               <div className="flex items-center gap-6">
-                <div className="w-40 h-28 bg-white rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden shadow-inner">
+                <div className="relative w-40 h-28 bg-white rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden shadow-inner">
                   {previewUrl ? (
-                    <img src={previewUrl} className="w-full h-full object-cover" alt="Preview" />
+                    <Image src={previewUrl} fill className="object-cover" alt="Preview" unoptimized />
                   ) : (
                     <ImageIcon className="text-slate-300" size={32} />
                   )}

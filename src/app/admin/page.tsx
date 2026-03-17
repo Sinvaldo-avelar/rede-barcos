@@ -1,6 +1,4 @@
 "use client";
-
-import { useEffect, useState } from "react";
 import { 
   Newspaper, 
   Image as ImageIcon, 
@@ -15,14 +13,6 @@ import {
 import Link from "next/link";
 
 export default function AdminDashboard() {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) return null;
-
   const menuItems = [
     {
       title: "Notícias",

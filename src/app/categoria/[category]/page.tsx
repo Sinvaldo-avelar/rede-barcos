@@ -93,7 +93,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
           /* Estado Vazio */
           <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-slate-50/50">
             <p className="text-slate-400 font-serif italic text-xl">
-              Nenhuma notícia publicada em "{nomeExibicao}" no momento.
+              Nenhuma notícia publicada em &quot;{nomeExibicao}&quot; no momento.
             </p>
             <Link href="/" className="inline-block mt-4 text-blue-600 hover:underline font-medium">
               Ver outras notícias

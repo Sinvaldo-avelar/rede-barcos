@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Radio } from "lucide-react";
@@ -76,6 +77,7 @@ export default function AoVivoPage() {
   const thumbUrl = useMemo(() => (videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : null), [videoId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setStartPlayer(false);
   }, [config?.video_url, config?.is_active]);
 
@@ -119,10 +121,11 @@ export default function AoVivoPage() {
                       className="relative h-full w-full bg-black text-left"
                     >
                       {thumbUrl ? (
-                        <img
+                        <Image
                           src={thumbUrl}
                           alt="Pré-visualização da transmissão ao vivo"
-                          className="h-full w-full object-contain"
+                          fill
+                          className="object-contain"
                         />
                       ) : (
                         <div className="h-full w-full bg-red-950" />

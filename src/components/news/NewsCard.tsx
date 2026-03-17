@@ -2,6 +2,25 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
+type NewsCardItem = {
+  id: string;
+  slug?: string;
+  titulo?: string;
+  subtitulo?: string;
+  resumo?: string;
+  conteudo?: string;
+  categoria?: string;
+  imagem_url?: string;
+  legenda_imagem?: string;
+  autor?: string;
+  created_at?: string;
+};
+
+type NewsCardProps = {
+  noticia: NewsCardItem;
+  priority?: boolean;
+};
+
 const limparHtmlTotal = (html: string) => {
   if (!html) return "";
   return html
@@ -19,7 +38,7 @@ const limparHtmlTotal = (html: string) => {
     .trim();
 };
 
-export default function NewsCard({ noticia, priority = false }: any) {
+export default function NewsCard({ noticia, priority = false }: NewsCardProps) {
   if (!noticia) return null;
 
   const categoria = noticia.categoria || "Geral";

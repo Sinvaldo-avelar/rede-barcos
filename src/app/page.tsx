@@ -6,13 +6,23 @@ import NewsGrid from "@/components/news/NewsGrid";
 import { supabase } from "@/lib/supabaseClient";
 import SkeletonGrid from "@/components/news/SkeletonCard";
 
+type Noticia = {
+  id: string;
+  titulo?: string;
+  subtitulo?: string;
+  categoria?: string;
+  conteudo?: string;
+  imagem_url?: string;
+  legenda_imagem?: string;
+  posicao?: string;
+  created_at?: string;
+};
+
 export default function Home() {
-  const [noticias, setNoticias] = useState<any[]>([]);
+  const [noticias, setNoticias] = useState<Noticia[]>([]);
   const [carregando, setCarregando] = useState(true);
 
   async function buscarNoticias() {
-    setCarregando(true);
-
     const { data, error } = await supabase
       .from("noticias")
       .select("*")
@@ -28,6 +38,7 @@ export default function Home() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     buscarNoticias();
   }, []);
 

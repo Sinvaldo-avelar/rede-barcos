@@ -1,4 +1,5 @@
 "use client"
+import Image from 'next/image';
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient'; 
 
@@ -7,8 +8,16 @@ type AdBannerProps = {
   inContainer?: boolean;
 };
 
+type Banner = {
+  id: number | string;
+  posicao?: string | null;
+  imagem_url?: string | null;
+  link_url?: string | null;
+  link_destino?: string | null;
+};
+
 export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
-  const [ads, setAds] = useState<any[]>([]);
+  const [ads, setAds] = useState<Banner[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const normalizarPosicao = (valor: string | null | undefined) => {
@@ -51,10 +60,6 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
     return filtrados.length > 0 ? filtrados : ads;
   }, [ads, slot]);
 
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [slot, adsDoSlot.length]);
-
   // Timer para girar os banners (muda a cada 5 segundos)
   useEffect(() => {
     if (adsDoSlot.length > 1) { // Só faz o timer se tiver mais de um banner
@@ -67,6 +72,8 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
 
   if (adsDoSlot.length === 0) return null;
 
+  const activeIndex = currentIndex % adsDoSlot.length;
+
   const bannerContent = (
     <div className="relative w-full h-25 sm:h-37.5 md:h-55 overflow-hidden rounded-xl border border-gray-100 shadow-sm bg-gray-50">
       {adsDoSlot.map((ad, index) => (
@@ -76,14 +83,16 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
           target="_blank"
           rel="noopener noreferrer"
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0"
+            index === activeIndex ? "opacity-100 z-10" : "opacity-0 z-0"
           }`}
         >
           {ad.imagem_url ? (
-            <img
+            <Image
               src={ad.imagem_url}
               alt="Publicidade Comercial"
-              className="w-full h-full object-cover md:object-fill"
+              fill
+              unoptimized
+              className="object-cover md:object-fill"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200">

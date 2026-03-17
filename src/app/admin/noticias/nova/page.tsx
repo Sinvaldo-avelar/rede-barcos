@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { Save, ArrowLeft, Image as ImageIcon, Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2, UploadCloud, Tag, LayoutDashboard, Table } from "lucide-react";
+import { Save, ArrowLeft, Image as ImageIcon, Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2, UploadCloud, Tag, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
 // Tiptap Imports
@@ -15,8 +16,9 @@ import { Table as TipTapTable } from '@tiptap/extension-table';
 import TipTapTableRow from '@tiptap/extension-table-row';
 import TipTapTableCell from '@tiptap/extension-table-cell';
 import TipTapTableHeader from '@tiptap/extension-table-header';
+import type { Editor } from '@tiptap/react';
 
-const MenuBar = ({ editor }: { editor: any }) => {
+const MenuBar = ({ editor }: { editor: Editor | null }) => {
   if (!editor) return null;
   const btnClass = (active: boolean) => 
     `p-2 rounded hover:bg-slate-100 transition-colors ${active ? 'bg-blue-100 text-blue-600' : 'text-slate-600'}`;
@@ -101,8 +103,9 @@ export default function NovaNoticia() {
       if (uploadError) throw uploadError;
       const { data: urlData } = supabase.storage.from('noticias_fotos').getPublicUrl(fileName);
       if (urlData) { setImagemUrl(urlData.publicUrl); setPreviewUrl(URL.createObjectURL(file)); }
-    } catch (error: any) {
-      alert('Erro no upload: ' + error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'erro desconhecido';
+      alert('Erro no upload: ' + message);
     } finally { setUploading(false); }
   }
 
@@ -215,8 +218,8 @@ export default function NovaNoticia() {
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
               <label className="block text-[10px] font-bold uppercase text-slate-400 mb-4 tracking-widest">Imagem de Destaque</label>
               <div className="flex flex-col md:flex-row items-start gap-6">
-                <div className="w-48 h-32 bg-white rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden shadow-inner flex-shrink-0">
-                  {previewUrl ? <img src={previewUrl} className="w-full h-full object-cover" alt="Preview" /> : <ImageIcon className="text-slate-300" size={32} />}
+                <div className="relative w-48 h-32 bg-white rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden shadow-inner flex-shrink-0">
+                  {previewUrl ? <Image src={previewUrl} fill className="object-cover" alt="Preview" unoptimized /> : <ImageIcon className="text-slate-300" size={32} />}
                 </div>
                 
                 <div className="space-y-4 w-full">

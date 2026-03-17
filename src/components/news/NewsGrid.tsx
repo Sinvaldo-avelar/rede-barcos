@@ -1,13 +1,24 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AdBanner } from '@/components/layout/AdBanner';
 
-export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
-  if (!noticias || noticias.length === 0) return (
-    <div className="text-center py-20 text-slate-400">Nenhuma notícia encontrada.</div>
-  );
+type NewsItem = {
+  id: string;
+  slug?: string;
+  titulo?: string;
+  subtitulo?: string;
+  conteudo?: string;
+  categoria?: string;
+  imagem_url?: string;
+  legenda_imagem?: string;
+  posicao?: string;
+  posicao_destaque?: string;
+};
+
+export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
 
   const limparHtmlTotal = (html: string) => {
     if (!html) return "";
@@ -15,7 +26,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
   };
 
   // --- LÓGICA DE ORGANIZAÇÃO (prioriza posicao, com fallback seguro) ---
-  const getPosicao = (item: any) => {
+  const getPosicao = (item: NewsItem) => {
     const valor = item?.posicao ?? item?.posicao_destaque ?? '';
     return String(valor).trim().toLowerCase();
   };
@@ -26,16 +37,16 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
   const noticiasFeed = noticias.filter(n => getPosicao(n) === 'feed');
   const noticiasSemPosicao = noticias.filter(n => !['principal', 'slider', 'lateral', 'feed'].includes(getPosicao(n)));
 
-  const usados = new Set<any>();
-  const adicionarUsado = (item: any) => {
+  const usados = new Set<string>();
+  const adicionarUsado = (item?: NewsItem) => {
     if (item) usados.add(item.id);
   };
-  const naoUsada = (item: any) => !usados.has(item.id);
+  const naoUsada = (item: NewsItem) => !usados.has(item.id);
 
   const mancheteTopo = noticiasPrincipal[0] || noticiasSemPosicao[0] || noticias[0];
   adicionarUsado(mancheteTopo);
 
-  const completarComSemPosicao = (lista: any[], limite: number) => {
+  const completarComSemPosicao = (lista: NewsItem[], limite: number) => {
     const base = lista.filter(naoUsada).slice(0, limite);
     const faltam = limite - base.length;
     const fallback = faltam > 0 ? noticiasSemPosicao.filter(naoUsada).slice(0, faltam) : [];
@@ -65,6 +76,10 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
     return () => clearInterval(timer);
   }, [paraOSlider.length]);
 
+  if (!noticias || noticias.length === 0) return (
+    <div className="text-center py-20 text-slate-400">Nenhuma notícia encontrada.</div>
+  );
+
   return (
     <section className="max-w-7xl mx-auto px-4 py-6 font-(family-name:--font-inter)">
       
@@ -74,7 +89,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
           <Link href={`/noticia/${mancheteTopo.id}`} className="group">
             <span className="text-[#00427a] font-bold text-sm mb-2 block uppercase">{mancheteTopo.categoria}</span>
             <h1 className="text-4xl md:text-5xl font-serif font-black leading-tight text-slate-900 group-hover:text-gray-600 transition-colors">
-              {limparHtmlTotal(mancheteTopo.titulo)}
+              {limparHtmlTotal(mancheteTopo.titulo || "")}
             </h1>
             <p className="text-gray-500 mt-2 text-lg line-clamp-2 font-medium">
                 {mancheteTopo.subtitulo || ""}
@@ -91,8 +106,8 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
           {colunaEsquerda.map(n => (
             <Link key={n.id} href={`/noticia/${n.id}`} className="block group border-b border-gray-50 pb-4 last:border-0">
               <span className="text-[#00427a] font-bold text-[11px] mb-1 block uppercase">{n.categoria}</span>
-              <h3 className="font-bold text-lg leading-tight group-hover:text-blue-700">{limparHtmlTotal(n.titulo)}</h3>
-              <p className="text-xs text-gray-500 mt-2 line-clamp-2">{n.subtitulo || limparHtmlTotal(n.conteudo)}</p>
+              <h3 className="font-bold text-lg leading-tight group-hover:text-blue-700">{limparHtmlTotal(n.titulo || "")}</h3>
+              <p className="text-xs text-gray-500 mt-2 line-clamp-2">{n.subtitulo || limparHtmlTotal(n.conteudo || "")}</p>
             </Link>
           ))}
         </div>
@@ -109,10 +124,11 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
                     index === sliderIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
                   }`}
                 >
-                  <img
-                    src={item.imagem_url}
-                    className="object-cover w-full h-full"
-                    alt={item.titulo}
+                  <Image
+                    src={item.imagem_url || ''}
+                    fill
+                    className="object-cover"
+                    alt={item.titulo || ''}
                   />
                   
                   {/* CRÉDITO DA IMAGEM */}
@@ -127,7 +143,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
                       {item.categoria}
                     </span>
                     <h2 className="text-white text-2xl font-bold leading-tight">
-                      {limparHtmlTotal(item.titulo)}
+                      {limparHtmlTotal(item.titulo || "")}
                     </h2>
                   </div>
                 </Link>
@@ -144,10 +160,11 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
               <div className="flex gap-4">
                 <div className="w-20 shrink-0">
                   <div className="relative w-20 h-20 bg-gray-100 overflow-hidden rounded-sm">
-                    <img 
-                      src={n.imagem_url} 
-                      className="object-cover w-full h-full" 
-                      alt={n.titulo} 
+                    <Image 
+                      src={n.imagem_url || ''} 
+                      fill
+                      className="object-cover" 
+                      alt={n.titulo || ''} 
                     />
                   </div>
                   {n.legenda_imagem && (
@@ -157,7 +174,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
                   )}
                 </div>
                 <h4 className="font-bold text-sm leading-tight group-hover:text-blue-800 transition-colors line-clamp-3">
-                  {limparHtmlTotal(n.titulo)}
+                  {limparHtmlTotal(n.titulo || "")}
                 </h4>
               </div>
             </Link>
@@ -175,11 +192,12 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
               {feedCrescente.map(n => (
                 <Link key={n.id} href={`/noticia/${n.id}`} className="group space-y-3">
-                   <div className="aspect-video overflow-hidden bg-gray-100 rounded-sm">
-                      <img 
-                        src={n.imagem_url} 
-                        className="w-full h-full object-cover transition-all duration-300" 
-                        alt={n.titulo} 
+                   <div className="relative aspect-video overflow-hidden bg-gray-100 rounded-sm">
+                      <Image 
+                        src={n.imagem_url || ''} 
+                        fill
+                        className="object-cover transition-all duration-300" 
+                        alt={n.titulo || ''} 
                       />
                    </div>
                    {n.legenda_imagem && (
@@ -190,7 +208,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: any[] }) {
                    <div className="space-y-1">
                       <span className="text-[#00427a] font-bold text-[10px] uppercase block">{n.categoria}</span>
                       <h4 className="font-bold text-sm leading-snug text-slate-800 group-hover:text-blue-900 line-clamp-3">
-                        {limparHtmlTotal(n.titulo)}
+                        {limparHtmlTotal(n.titulo || "")}
                       </h4>
                    </div>
                 </Link>

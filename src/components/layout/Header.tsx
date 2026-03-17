@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image'; 
 import { Search, Menu, Zap, CloudSun, X } from 'lucide-react';
@@ -9,6 +9,42 @@ import { SearchBar } from '../navigation/SearchBar';
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [temperature, setTemperature] = useState<string>('...');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchTemperature = async () => {
+      try {
+        const response = await fetch(
+          'https://api.open-meteo.com/v1/forecast?latitude=-18.5933&longitude=-39.7322&current=temperature_2m&timezone=America%2FSao_Paulo'
+        );
+
+        if (!response.ok) {
+          throw new Error('Falha ao buscar temperatura');
+        }
+
+        const data = await response.json();
+        const currentTemperature = data?.current?.temperature_2m;
+
+        if (isMounted && typeof currentTemperature === 'number') {
+          setTemperature(`${Math.round(currentTemperature)}°C`);
+        }
+      } catch {
+        if (isMounted) {
+          setTemperature('--°C');
+        }
+      }
+    };
+
+    fetchTemperature();
+    const interval = setInterval(fetchTemperature, 60_000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
   
   const categories = [
     { name: 'Espírito Santo', slug: 'espírito-santo' },
@@ -89,7 +125,7 @@ export function Header() {
                       Conceição da Barra
                     </span>
                     <span className="text-sm font-black text-[#003d73]">
-                      28°C
+                      {temperature}
                     </span>
                   </div>
 

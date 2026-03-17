@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
@@ -17,7 +18,16 @@ export default function GerenciarNoticias() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [noticias, setNoticias] = useState<any[]>([]);
+  type NoticiaItem = {
+    id: string;
+    titulo?: string;
+    imagem_url?: string;
+    created_at: string;
+    posicao?: string;
+    posicao_destaque?: string;
+  };
+
+  const [noticias, setNoticias] = useState<NoticiaItem[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState("");
   const [filtroPosicao, setFiltroPosicao] = useState("todas");
@@ -34,6 +44,7 @@ export default function GerenciarNoticias() {
     const posicaoUrl = searchParams.get("posicao") || "todas";
     const posicaoValida = ["todas", "principal", "slider", "lateral", "feed"].includes(posicaoUrl) ? posicaoUrl : "todas";
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBusca(buscaUrl);
     setFiltroPosicao(posicaoValida);
   }, [searchParams]);
@@ -55,11 +66,6 @@ export default function GerenciarNoticias() {
     }
   }, [busca, filtroPosicao, pathname, router, searchParams]);
 
-  // Buscar notícias do banco
-  useEffect(() => {
-    fetchNoticias();
-  }, []);
-
   async function fetchNoticias() {
     setCarregando(true);
     const { data, error } = await supabase
@@ -70,6 +76,12 @@ export default function GerenciarNoticias() {
     if (!error) setNoticias(data || []);
     setCarregando(false);
   }
+
+  // Buscar notícias do banco
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchNoticias();
+  }, []);
 
   // Função para deletar notícia
   async function handleDeletar(id: string) {
@@ -103,7 +115,7 @@ export default function GerenciarNoticias() {
     .filter(([, total]) => total === 0)
     .map(([posicao]) => posicao);
 
-  function getPosicaoLabel(item: any) {
+  function getPosicaoLabel(item: NoticiaItem) {
     const valor = item?.posicao || item?.posicao_destaque;
     if (valor === "principal") return "Principal";
     if (valor === "slider") return "Slider";
@@ -185,11 +197,14 @@ export default function GerenciarNoticias() {
                   <tr key={item.id} className="hover:bg-[#f7fbfa] transition-colors group">
                     <td className="px-6 py-4 w-24">
                       {item.imagem_url ? (
-                        <img 
-                          src={item.imagem_url} 
-                          alt="Capa" 
-                          className="w-16 h-12 object-cover rounded-lg shadow-sm border border-[#cbdad5]"
-                        />
+                        <div className="relative w-16 h-12 rounded-lg shadow-sm border border-[#cbdad5] overflow-hidden">
+                          <Image 
+                            src={item.imagem_url} 
+                            alt="Capa" 
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
                         <div className="w-16 h-12 bg-[#eef5f2] rounded-lg flex items-center justify-center text-[#003d73]/40">
                           -

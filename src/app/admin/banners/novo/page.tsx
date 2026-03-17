@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,19 @@ export default function NovoBanner() {
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  type BannerPayload = {
+    nome?: string;
+    titulo?: string;
+    nome_banner?: string;
+    imagem_url?: string;
+    imagem?: string;
+    url_imagem?: string;
+    posicao?: "top" | "middle";
+    link_url?: string;
+    link_destino?: string;
+    url?: string;
+  };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -35,7 +49,7 @@ export default function NovoBanner() {
       const filePath = fileName;
 
       const bucketsPreferidos = ['banners', 'noticias_fotos'];
-      let ultimoErro: any = null;
+      let ultimoErro: Error | null = null;
 
       for (const bucket of bucketsPreferidos) {
         const { error: uploadError } = await supabase.storage
@@ -54,12 +68,13 @@ export default function NovoBanner() {
           }
         }
 
-        ultimoErro = uploadError;
+        ultimoErro = uploadError ? new Error(uploadError.message) : null;
       }
 
       throw ultimoErro || new Error('Falha no upload da imagem.');
-    } catch (error: any) {
-      alert('Erro no upload do banner: ' + error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'erro desconhecido';
+      alert('Erro no upload do banner: ' + message);
     } finally {
       setUploading(false);
     }
@@ -76,7 +91,7 @@ export default function NovoBanner() {
     setCarregando(true);
 
     const colunasIgnoradas = new Set<string>();
-    let erroFinal: any = null;
+    let erroFinal: Error | null = null;
     let salvou = false;
 
     const escolherColunaDisponivel = (candidatas: string[]) => {
@@ -86,7 +101,7 @@ export default function NovoBanner() {
     const linkFinal = linkDestino.trim() || "#";
 
     for (let tentativa = 0; tentativa < 6; tentativa++) {
-      const payload: any = {};
+      const payload: BannerPayload = {};
 
       const colunaNome = escolherColunaDisponivel(["nome", "titulo", "nome_banner"]);
       if (colunaNome) payload[colunaNome] = nome;
@@ -118,7 +133,7 @@ export default function NovoBanner() {
         break;
       }
 
-      erroFinal = error;
+      erroFinal = new Error(String(error.message || "erro desconhecido"));
       const mensagem = String(error.message || "");
       const colunaAusente = mensagem.match(/Could not find the '([^']+)' column/i)?.[1];
 
@@ -252,7 +267,7 @@ export default function NovoBanner() {
               {/* Área de Preview larga para simular um banner */}
               <div className="w-full h-48 bg-white rounded-xl border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden shadow-inner relative">
                 {previewUrl ? (
-                  <img src={previewUrl} className="w-full h-full object-contain" alt="Preview Banner" />
+                  <Image src={previewUrl} fill className="object-contain" alt="Preview Banner" unoptimized />
                 ) : (
                   <div className="text-center space-y-2">
                     <ImageIcon className="text-slate-300 mx-auto" size={48} />

@@ -5,10 +5,16 @@ import { Search, X, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
+type SearchResult = {
+  id: string;
+  titulo?: string;
+  subtitulo?: string;
+  categoria?: string;
+};
 
 export function SearchBar({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const [query, setQuery] = useState("");
-  const [resultados, setResultados] = useState<any[]>([]);
+  const [resultados, setResultados] = useState<SearchResult[]>([]);
   const [buscando, setBuscando] = useState(false);
 
   const normalizarTexto = (valor: string) =>
@@ -62,13 +68,6 @@ export function SearchBar({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
     return () => clearTimeout(timer);
   }, [podeBuscar, queryLimpa]);
-
-  useEffect(() => {
-    if (!isOpen) {
-      setResultados([]);
-      setBuscando(false);
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -139,7 +138,7 @@ export function SearchBar({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
           {podeBuscar && !buscando && resultados.length === 0 && (
             <div className="text-center py-10">
               <p className="text-slate-400 font-serif italic text-xl">
-                Nenhum resultado encontrado para "{queryLimpa}"
+                Nenhum resultado encontrado para &quot;{queryLimpa}&quot;
               </p>
             </div>
           )}

@@ -1,5 +1,6 @@
 "use client"
 
+import Image from 'next/image'
 import { useState, useRef } from 'react'
 import { Play, Volume2 } from 'lucide-react'
 
@@ -63,9 +64,11 @@ export function RadioDock() {
                   : 'border-slate-100 hover:border-blue-400'
                 }`}
             >
-              <img 
-                src={radio.logo} 
-                className={`h-full w-full object-contain p-2 md:p-4 transition-all duration-700 
+              <Image 
+                src={radio.logo}
+                alt={radio.name}
+                fill
+                className={`object-contain p-2 md:p-4 transition-all duration-700 
                   ${playingId === radio.id ? 'brightness-75' : 'brightness-100'}`}
               />
 

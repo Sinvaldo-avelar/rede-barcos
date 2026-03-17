@@ -1,25 +1,20 @@
 "use client"
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
 
+type FotoMidia = {
+  titulo?: string;
+  imagem_url: string;
+  created_at?: string;
+};
+
 export default function MidiaAdmin() {
-  const [fotos, setFotos] = useState<any[]>([]);
-  const [fotoSelecionada, setFotoSelecionada] = useState<any>(null);
+  const [fotos, setFotos] = useState<FotoMidia[]>([]);
+  const [fotoSelecionada, setFotoSelecionada] = useState<FotoMidia | null>(null);
   const [senhaInput, setSenhaInput] = useState("");
   const [autenticado, setAutenticado] = useState(false);
-
-  // 1. Verifica se já está logado no navegador (Sincronizado com o Admin)
-  useEffect(() => {
-    const logado = localStorage.getItem("logado_admin");
-    if (logado === "sim") {
-      setAutenticado(true);
-      carregarFotos();
-    }
-  }, []);
-
-  // Busca a senha atual definida pelo usuário (ou a padrão)
-  const getSenhaAtual = () => localStorage.getItem("senha_mestra") || "barcos2024";
 
   async function carregarFotos() {
     const { data, error } = await supabase
@@ -28,10 +23,23 @@ export default function MidiaAdmin() {
       .not("imagem_url", "eq", "")
       .order("created_at", { ascending: false });
 
-    if (!error) setFotos(data);
+    if (!error) setFotos((data || []) as FotoMidia[]);
   }
 
-  function verificarSenha(e: any) {
+  // 1. Verifica se já está logado no navegador (Sincronizado com o Admin)
+  useEffect(() => {
+    const logado = localStorage.getItem("logado_admin");
+    if (logado === "sim") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setAutenticado(true);
+      carregarFotos();
+    }
+  }, []);
+
+  // Busca a senha atual definida pelo usuário (ou a padrão)
+  const getSenhaAtual = () => localStorage.getItem("senha_mestra") || "barcos2024";
+
+  function verificarSenha(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (senhaInput === getSenhaAtual()) {
       setAutenticado(true);
@@ -75,7 +83,7 @@ export default function MidiaAdmin() {
             className="group relative cursor-pointer border-2 border-white hover:border-blue-500 shadow-sm overflow-hidden rounded bg-gray-200 aspect-square transition"
             onClick={() => setFotoSelecionada(item)}
           >
-            <img src={item.imagem_url} alt="" className="object-cover w-full h-full" />
+            <Image src={item.imagem_url} alt="" fill className="object-cover" />
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center p-2 text-center">
                <span className="text-white text-[10px] font-bold leading-tight">{item.titulo}</span>
             </div>
@@ -87,7 +95,7 @@ export default function MidiaAdmin() {
       {fotoSelecionada && (
         <div className="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4 transition-all" onClick={() => setFotoSelecionada(null)}>
           <button className="absolute top-5 right-5 text-white text-4xl">&times;</button>
-          <img src={fotoSelecionada.imagem_url} className="max-w-full max-h-[80vh] rounded shadow-2xl" />
+          <Image src={fotoSelecionada.imagem_url} alt={fotoSelecionada.titulo || "Foto selecionada"} width={1200} height={800} className="rounded shadow-2xl max-w-full max-h-[80vh] w-auto h-auto" />
           <div className="mt-6 text-center max-w-xl">
             <h2 className="text-white font-bold text-lg">{fotoSelecionada.titulo}</h2>
             <div className="mt-4 p-2 bg-gray-800 rounded border border-gray-700">
