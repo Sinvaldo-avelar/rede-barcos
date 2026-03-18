@@ -94,7 +94,7 @@ export function Header() {
                 </div>
               </div>
 
-              <div className="relative w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
+              <div className="hidden xs:block relative xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
                  <Image 
                    src="/logor.png" 
                    alt="Logo Barco"
@@ -104,8 +104,19 @@ export function Header() {
               </div>
             </Link>
 
+            {/* MENU MOBILE (ESQUERDA) */}
+            <div className="relative z-10 mr-auto lg:hidden">
+              <button 
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="flex items-center gap-1.5 bg-[#003d73] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all"
+              >
+                {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                <span className="hidden xs:inline">Menu</span>
+              </button>
+            </div>
+
             {/* LADO DIREITO */}
-            <div className="relative z-10 flex justify-end items-center gap-2 sm:gap-4 lg:flex-1">
+            <div className="relative z-10 ml-auto flex justify-end items-center gap-2 sm:gap-4 lg:flex-1">
 
               <div className="hidden lg:flex items-center gap-4">
                 
@@ -135,21 +146,12 @@ export function Header() {
                 </div>
               </div>
 
-              {/* BUSCA MOBILE */}
+              {/* BUSCA MOBILE (DIREITA) */}
               <button 
                 onClick={() => setIsSearchOpen(true)}
                 className="lg:hidden p-2 bg-white text-[#003d73] rounded-xl shadow-md active:scale-95 transition-all border border-[#cbdad5]"
               >
                 <Search className="w-5 h-5" />
-              </button>
-
-              {/* MENU MOBILE */}
-              <button 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden flex items-center gap-1.5 bg-[#003d73] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all"
-              >
-                {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-                <span className="hidden xs:inline">Menu</span>
               </button>
             </div>
           </div>
