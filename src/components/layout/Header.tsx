@@ -60,7 +60,7 @@ export function Header() {
       <header className="w-full bg-[#eaf5f1]/95 backdrop-blur border-b border-[#cbdad5] sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           
-          <div className="flex flex-row items-center justify-between py-2 lg:py-3 gap-2">
+          <div className="relative flex flex-row items-center justify-between py-2 lg:py-3 gap-2">
             
             {/* LOGO ESQUERDA */}
             <div className="flex-1 hidden lg:flex items-center justify-start">
@@ -76,17 +76,17 @@ export function Header() {
             </div>
 
             {/* LOGO CENTRAL */}
-            <Link href="/" className="flex flex-row items-center group shrink-0 max-w-[92%] sm:max-w-none">
-              <div className="flex flex-col items-end shrink">
+            <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex flex-row items-center justify-center group w-max max-w-[70%] xs:max-w-[72%] sm:max-w-[78%] lg:static lg:left-auto lg:translate-x-0 lg:max-w-none lg:w-auto lg:shrink-0">
+              <div className="flex flex-col items-center md:items-end shrink">
                 <div className="relative">
-                  <h1 className="text-[#003d73] font-sans text-[15px] xs:text-[18px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
+                  <h1 className="text-[#003d73] font-sans text-[17px] xs:text-[20px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
                     PORTAL DA <span className="text-transparent bg-clip-text bg-linear-to-r from-[#003d73] to-[#005bb5]">REDE BARCOS</span>
                   </h1>
 
                   <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-[#d4af37] transition-all duration-300 group-hover:w-full"></span>
                 </div>
                 
-                <div className="flex items-center gap-1 mt-1 bg-white/40 px-2 py-0.5 rounded-full border border-[#003d73]/10 self-end">
+                <div className="flex items-center gap-1 mt-1 bg-white/40 px-2 py-0.5 rounded-full border border-[#003d73]/10 self-center md:self-end">
                   <Zap className="w-2 md:w-3 h-2 md:h-3 text-[#d4af37] fill-[#d4af37]" />
                   <p className="text-[#003d73] text-[6px] md:text-[8px] font-black uppercase tracking-widest">
                     Jornalismo com responsabilidade
@@ -105,7 +105,7 @@ export function Header() {
             </Link>
 
             {/* LADO DIREITO */}
-            <div className="flex-1 flex justify-end items-center gap-2 sm:gap-4">
+            <div className="relative z-10 flex justify-end items-center gap-2 sm:gap-4 lg:flex-1">
 
               <div className="hidden lg:flex items-center gap-4">
                 
