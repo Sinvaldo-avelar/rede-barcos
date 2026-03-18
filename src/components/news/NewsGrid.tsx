@@ -68,6 +68,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
   ];
 
   const [sliderIndex, setSliderIndex] = useState(0);
+  const sliderAtual = paraOSlider[sliderIndex];
 
   useEffect(() => {
     if (paraOSlider.length <= 1) return;
@@ -123,40 +124,37 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
         {/* MEIO (SLIDER) */}
         <div className="order-2 lg:order-2 lg:col-span-6">
           {paraOSlider.length > 0 && (
-            <div className="relative aspect-square md:aspect-video w-full overflow-hidden bg-slate-900 rounded-sm shadow-lg">
-              {paraOSlider.map((item, index) => (
-                <Link
-                  key={item.id}
-                  href={`/noticia/${item.id}`}
-                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-                    index === sliderIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                  }`}
-                >
-                  <Image
-                    src={item.imagem_url || ''}
-                    fill
-                    className="object-cover"
-                    alt={item.titulo || ''}
-                  />
-                  
-                  {/* CRÉDITO DA IMAGEM */}
-                  {item.legenda_imagem && (
-                    <div className="absolute top-2 right-2 bg-black/50 text-[9px] text-white px-2 py-0.5 rounded backdrop-blur-sm z-20">
-                      {item.legenda_imagem}
-                    </div>
-                  )}
+            <>
+              <div className="relative aspect-4/3 md:aspect-video w-full overflow-hidden bg-slate-900 rounded-3xl md:rounded-lg shadow-lg">
+                {paraOSlider.map((item, index) => (
+                  <Link
+                    key={item.id}
+                    href={`/noticia/${item.id}`}
+                    className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                      index === sliderIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                    }`}
+                  >
+                    <Image
+                      src={item.imagem_url || ''}
+                      fill
+                      className="object-cover"
+                      alt={item.titulo || ''}
+                    />
+                  </Link>
+                ))}
+              </div>
 
-                  <div className="absolute bottom-0 left-0 p-6 bg-linear-to-t from-black/95 to-transparent w-full">
-                    <span className="text-white text-xs font-bold uppercase mb-2 block border-l-2 border-white pl-2">
-                      {item.categoria}
-                    </span>
-                    <h2 className="text-white text-2xl font-bold leading-tight">
-                      {limparHtmlTotal(item.titulo || "")}
-                    </h2>
-                  </div>
+              {sliderAtual && (
+                <Link href={`/noticia/${sliderAtual.id}`} className="block mt-3 sm:mt-4">
+                  <span className="text-[#00427a] font-bold text-[12px] sm:text-[13px] uppercase mb-1.5 block">
+                    {sliderAtual.categoria}
+                  </span>
+                  <h2 className="text-slate-900 text-xl sm:text-2xl font-bold leading-tight">
+                    {limparHtmlTotal(sliderAtual.titulo || "")}
+                  </h2>
                 </Link>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
 
