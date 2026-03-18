@@ -60,7 +60,7 @@ export function Header() {
       <header className="w-full bg-[#eaf5f1]/95 backdrop-blur border-b border-[#cbdad5] sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           
-          <div className="relative flex flex-row items-center justify-between py-2 lg:py-3 gap-2">
+          <div className="relative flex flex-row items-center justify-between py-2.5 lg:py-3 gap-2.5">
             
             {/* LOGO ESQUERDA */}
             <div className="flex-1 hidden lg:flex items-center justify-start">
@@ -79,7 +79,7 @@ export function Header() {
             <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex flex-row items-center justify-center group w-max max-w-[70%] xs:max-w-[72%] sm:max-w-[78%] lg:static lg:left-auto lg:translate-x-0 lg:max-w-none lg:w-auto lg:shrink-0">
               <div className="flex flex-col items-center md:items-end shrink">
                 <div className="relative">
-                  <h1 className="text-[#003d73] font-sans text-[17px] xs:text-[20px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
+                  <h1 className="text-[#003d73] font-sans text-[19px] xs:text-[22px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
                     PORTAL DA <span className="text-transparent bg-clip-text bg-linear-to-r from-[#003d73] to-[#005bb5]">REDE BARCOS</span>
                   </h1>
 
@@ -88,13 +88,13 @@ export function Header() {
                 
                 <div className="flex items-center gap-1 mt-1 bg-white/40 px-2 py-0.5 rounded-full border border-[#003d73]/10 self-center md:self-end">
                   <Zap className="w-2 md:w-3 h-2 md:h-3 text-[#d4af37] fill-[#d4af37]" />
-                  <p className="text-[#003d73] text-[6px] md:text-[8px] font-black uppercase tracking-widest">
+                  <p className="text-[#003d73] text-[7px] md:text-[8px] font-black uppercase tracking-widest">
                     Jornalismo com responsabilidade
                   </p>
                 </div>
               </div>
 
-              <div className="hidden xs:block relative xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
+              <div className="hidden xs:block relative xs:w-13 xs:h-13 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
                  <Image 
                    src="/logor.png" 
                    alt="Logo Barco"
@@ -110,7 +110,7 @@ export function Header() {
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="flex items-center gap-1.5 bg-[#003d73] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all"
               >
-                {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                {isMenuOpen ? <X className="w-3.5 h-3.5" /> : <Menu className="w-3.5 h-3.5" />}
                 <span className="hidden xs:inline">Menu</span>
               </button>
             </div>
@@ -151,7 +151,7 @@ export function Header() {
                 onClick={() => setIsSearchOpen(true)}
                 className="lg:hidden p-2 bg-white text-[#003d73] rounded-xl shadow-md active:scale-95 transition-all border border-[#cbdad5]"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-4.5 h-4.5" />
               </button>
             </div>
           </div>
