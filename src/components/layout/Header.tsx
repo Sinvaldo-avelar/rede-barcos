@@ -58,9 +58,9 @@ export function Header() {
   return (
     <>
       <header className="w-full bg-[#eaf5f1]/95 backdrop-blur border-b border-[#cbdad5] sticky top-0 z-50 shadow-md">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+        <div className="max-w-7xl mx-auto px-1 sm:px-4">
           
-          <div className="flex flex-row items-center justify-between py-2 lg:py-3 gap-2">
+          <div className="flex flex-row items-center justify-between py-3 lg:py-3 gap-1 sm:gap-2">
             
             {/* LOGO ESQUERDA */}
             <div className="flex-1 hidden lg:flex items-center justify-start">
@@ -76,10 +76,10 @@ export function Header() {
             </div>
 
             {/* LOGO CENTRAL */}
-            <Link href="/" className="flex flex-row items-center group shrink-0 max-w-[92%] sm:max-w-none">
+            <Link href="/" className="flex flex-row items-center group flex-1 min-w-0 lg:flex-none lg:shrink-0">
               <div className="flex flex-col items-end shrink">
                 <div className="relative">
-                  <h1 className="text-[#003d73] font-sans text-[17px] xs:text-[20px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
+                  <h1 className="text-[#003d73] font-sans text-[20px] xs:text-[24px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
                     PORTAL DA <span className="text-transparent bg-clip-text bg-linear-to-r from-[#003d73] to-[#005bb5]">REDE BARCOS</span>
                   </h1>
 
@@ -88,13 +88,13 @@ export function Header() {
                 
                 <div className="flex items-center gap-1 mt-1 bg-white/40 px-2 py-0.5 rounded-full border border-[#003d73]/10 self-end">
                   <Zap className="w-2 md:w-3 h-2 md:h-3 text-[#d4af37] fill-[#d4af37]" />
-                  <p className="text-[#003d73] text-[7px] md:text-[8px] font-black uppercase tracking-widest">
+                  <p className="text-[#003d73] text-[8px] md:text-[8px] font-black uppercase tracking-widest">
                     Jornalismo com responsabilidade
                   </p>
                 </div>
               </div>
 
-              <div className="relative w-12 h-12 xs:w-14 xs:h-14 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
+              <div className="relative w-14 h-14 xs:w-16 xs:h-16 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
                  <Image 
                    src="/logor.png" 
                    alt="Logo Barco"
@@ -105,7 +105,7 @@ export function Header() {
             </Link>
 
             {/* LADO DIREITO */}
-            <div className="flex-1 flex justify-end items-center gap-2 sm:gap-4">
+            <div className="shrink-0 flex justify-end items-center gap-2 sm:gap-4 lg:flex-1">
 
               <div className="hidden lg:flex items-center gap-4">
                 
@@ -138,17 +138,17 @@ export function Header() {
               {/* BUSCA MOBILE */}
               <button 
                 onClick={() => setIsSearchOpen(true)}
-                className="lg:hidden p-2 bg-white text-[#003d73] rounded-xl shadow-md active:scale-95 transition-all border border-[#cbdad5]"
+                className="lg:hidden p-3 bg-white text-[#003d73] rounded-xl shadow-md active:scale-95 transition-all border border-[#cbdad5]"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-6 h-6" />
               </button>
 
               {/* MENU MOBILE */}
               <button 
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden flex items-center gap-1.5 bg-[#003d73] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all"
+                className="lg:hidden flex items-center gap-2 bg-[#003d73] text-white px-4 py-3 rounded-xl text-[11px] font-black uppercase shadow-lg active:scale-95 transition-all"
               >
-                {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 <span className="hidden xs:inline">Menu</span>
               </button>
             </div>
