@@ -54,6 +54,7 @@ export default function ListaBanners() {
     const normalizado = String(valor || "").trim().toLowerCase();
     if (normalizado === "top" || normalizado === "topo") return "Topo";
     if (normalizado === "middle" || normalizado === "meio") return "Meio";
+    if (normalizado === "bottom" || normalizado === "rodape" || normalizado === "fim") return "Final";
     return "Automático";
   };
 

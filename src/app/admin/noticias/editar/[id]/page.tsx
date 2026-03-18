@@ -212,11 +212,12 @@ export default function EditarNoticiaPage() {
                 onChange={(e) => setCategoria(e.target.value)}
                 className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-700 focus:ring-2 focus:ring-blue-600 outline-none cursor-pointer"
               >
-                <option value="Geral">Geral (Slide Principal)</option>
+                <option value="Brasil">Brasil</option>
+                <option value="Geral">Geral</option>
                 <option value="Conceição da Barra">Conceição da Barra</option>
+                <option value="Política">Política</option>
                 <option value="Polícia">Polícia</option>
-                <option value="Esporte">Esporte</option>
-                <option value="Saúde">Saúde</option>
+                <option value="Esportes">Esportes</option>
               </select>
             </div>
 
@@ -246,6 +247,10 @@ export default function EditarNoticiaPage() {
                 ))}
               </div>
             </div>
+
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Tema define a editoria da notícia. Posição define onde ela aparece na capa (Principal, Slider, Lateral ou Feed).
+            </p>
 
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
               <label className="block text-[10px] font-bold uppercase text-slate-400 mb-4 tracking-widest">Foto de Capa da Notícia</label>

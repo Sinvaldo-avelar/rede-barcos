@@ -4,7 +4,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabaseClient'; 
 
 type AdBannerProps = {
-  slot?: 'top' | 'middle';
+  slot?: 'top' | 'middle' | 'bottom';
   inContainer?: boolean;
 };
 
@@ -24,6 +24,7 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
     const normalizado = String(valor || '').trim().toLowerCase();
     if (normalizado === 'top' || normalizado === 'topo') return 'top';
     if (normalizado === 'middle' || normalizado === 'meio') return 'middle';
+    if (normalizado === 'bottom' || normalizado === 'rodape' || normalizado === 'fim') return 'bottom';
     return null;
   };
 
@@ -50,6 +51,8 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
   const adsDoSlot = useMemo(() => {
     const comPosicaoExplicita = ads.filter((ad) => normalizarPosicao(ad.posicao) === slot);
     if (comPosicaoExplicita.length > 0) return comPosicaoExplicita;
+
+    if (slot === 'bottom') return [];
 
     if (ads.length <= 1) return ads;
 

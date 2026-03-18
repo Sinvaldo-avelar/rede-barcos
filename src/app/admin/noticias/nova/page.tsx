@@ -197,11 +197,12 @@ export default function NovaNoticia() {
                     value={categoria} onChange={(e) => setCategoria(e.target.value)}
                     className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 font-bold text-slate-700 outline-none cursor-pointer"
                   >
+                    <option value="Brasil">Brasil</option>
                     <option value="Geral">Geral</option>
-                    <option value="Espírito Santo">Espírito Santo</option>
+                    <option value="Conceição da Barra">Conceição da Barra</option>
                     <option value="Política">Política</option>
-                    <option value="Saúde">Saúde</option>
-                    <option value="Esporte">Esporte</option>
+                    <option value="Polícia">Polícia</option>
+                    <option value="Esportes">Esportes</option>
                     <option value="Outra">Outra...</option>
                   </select>
                   {categoria === "Outra" && (
@@ -213,6 +214,10 @@ export default function NovaNoticia() {
                   )}
                 </div>
             </div>
+
+            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              Tema define a editoria da notícia. Posição define onde ela aparece na capa (Principal, Slider, Lateral ou Feed).
+            </p>
 
             {/* FOTO DE CAPA COM CAMPO DE CRÉDITO */}
             <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">

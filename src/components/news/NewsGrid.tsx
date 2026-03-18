@@ -19,7 +19,6 @@ type NewsItem = {
 };
 
 export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
-
   const limparHtmlTotal = (html: string) => {
     if (!html) return "";
     return html.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
@@ -46,17 +45,30 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
   const mancheteTopo = noticiasPrincipal[0] || noticiasSemPosicao[0] || noticias[0];
   adicionarUsado(mancheteTopo);
 
-  const completarComSemPosicao = (lista: NewsItem[], limite: number) => {
-    const base = lista.filter(naoUsada).slice(0, limite);
-    const faltam = limite - base.length;
-    const fallback = faltam > 0 ? noticiasSemPosicao.filter(naoUsada).slice(0, faltam) : [];
-    const resultado = [...base, ...fallback];
-    resultado.forEach(adicionarUsado);
-    return resultado;
-  };
+  const paraOSlider = (
+    noticiasSlider.filter(naoUsada).slice(0, 3).length > 0
+      ? noticiasSlider.filter(naoUsada).slice(0, 3)
+      : noticiasSemPosicao.filter(naoUsada).slice(0, 3).length > 0
+        ? noticiasSemPosicao.filter(naoUsada).slice(0, 3)
+        : noticias.filter(naoUsada).slice(0, 3)
+  );
+  paraOSlider.forEach(adicionarUsado);
 
-  const paraOSlider = completarComSemPosicao(noticiasSlider, 3);
-  const laterais = completarComSemPosicao(noticiasLateral, 6);
+  const lateraisBase = noticiasLateral.filter(naoUsada).slice(0, 6);
+  const laterais =
+    lateraisBase.length >= 6
+      ? lateraisBase
+      : [
+          ...lateraisBase,
+          ...noticias.filter(
+            (item) =>
+              naoUsada(item) &&
+              getPosicao(item) !== 'principal' &&
+              getPosicao(item) !== 'slider' &&
+              getPosicao(item) !== 'lateral'
+          ),
+        ].slice(0, 6);
+  laterais.forEach(adicionarUsado);
   const colunaEsquerda = laterais.slice(0, 3);
   const colunaDireita = laterais.slice(3, 6);
 
@@ -65,6 +77,14 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
     ...noticiasFeed.filter(naoUsada),
     ...noticiasSemPosicao.filter(naoUsada),
   ];
+  const blocosFeed = Array.from({ length: Math.ceil(feedCrescente.length / 12) }, (_, blocoIndex) => {
+    const inicio = blocoIndex * 12;
+    const noticiasBloco = feedCrescente.slice(inicio, inicio + 12);
+    return {
+      compactas: noticiasBloco.slice(0, 6),
+      maiores: noticiasBloco.slice(6, 12),
+    };
+  });
 
   const [sliderIndex, setSliderIndex] = useState(0);
   const sliderAtual = paraOSlider[sliderIndex];
@@ -185,26 +205,73 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
       {/* 3. E DEPOIS EMBAIXO (O FEED QUE CRESCE) */}
       {feedCrescente.length > 0 && (
         <div className="pt-10 border-t border-gray-200">
-           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-              {feedCrescente.map(n => (
-                <Link key={n.id} href={`/noticia/${n.id}`} className="group space-y-3">
-                   <div className="relative aspect-video overflow-hidden bg-gray-100 rounded-sm">
-                      <Image 
-                        src={n.imagem_url || ''} 
-                        fill
-                        className="object-cover transition-all duration-300" 
-                        alt={n.titulo || ''} 
-                      />
-                   </div>
-                   <div className="space-y-1">
-                      <span className="text-[#00427a] font-bold text-[10px] uppercase block">{n.categoria}</span>
-                      <h4 className="font-bold text-sm leading-snug text-slate-800 group-hover:text-blue-900 line-clamp-3">
-                        {limparHtmlTotal(n.titulo || "")}
-                      </h4>
-                   </div>
-                </Link>
-              ))}
-           </div>
+          <div className="space-y-10">
+            {blocosFeed.map((bloco, blocoIndex) => (
+              <div key={`bloco-${blocoIndex}`} className="space-y-8">
+                {bloco.compactas.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {bloco.compactas.map((n) => (
+                      <Link key={`compacta-${n.id}`} href={`/noticia/${n.id}`} className="group block border-b border-gray-100 pb-4 last:border-0">
+                        <div className="flex items-start gap-3.5">
+                          <div className="relative w-34 h-22 lg:w-36 lg:h-24 bg-gray-100 overflow-hidden rounded-xl shrink-0">
+                            <Image
+                              src={n.imagem_url || ''}
+                              fill
+                              className="object-cover"
+                              alt={n.titulo || ''}
+                            />
+                          </div>
+
+                          <div className="min-w-0">
+                            <h4 className="font-bold text-base leading-tight text-slate-800 group-hover:text-blue-900 line-clamp-3">
+                              {limparHtmlTotal(n.titulo || "")}
+                            </h4>
+                            <span className="text-[#00427a] font-bold text-[11px] mt-2 block uppercase line-clamp-1">
+                              {n.categoria || 'Geral'}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                {bloco.maiores.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                    {bloco.maiores.map((n) => (
+                      <Link key={`maior-${n.id}`} href={`/noticia/${n.id}`} className="group block">
+                        <div className="space-y-3">
+                          <div
+                            className="relative w-full bg-gray-100 overflow-hidden rounded-2xl"
+                            style={{ aspectRatio: '12 / 5' }}
+                          >
+                            <Image
+                              src={n.imagem_url || ''}
+                              fill
+                              className="object-cover transition-all duration-300"
+                              alt={n.titulo || ''}
+                            />
+                          </div>
+                          <span className="text-[#00427a] font-bold text-[11px] mt-1 block uppercase line-clamp-1">
+                            {n.categoria || 'Geral'}
+                          </span>
+                          <h4 className="font-bold text-base sm:text-lg lg:text-[26px] leading-[1.2] text-slate-800 group-hover:text-blue-900 line-clamp-3">
+                            {limparHtmlTotal(n.titulo || "")}
+                          </h4>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+
+                {blocoIndex === 0 && (
+                  <div className="pt-4">
+                    <AdBanner slot="bottom" inContainer={false} />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

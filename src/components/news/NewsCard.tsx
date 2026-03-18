@@ -53,6 +53,7 @@ export default function NewsCard({ noticia, priority = false }: NewsCardProps) {
   const coresCores: { [key: string]: string } = {
     "Política": "border-red-600 text-red-600",
     "Polícia": "border-gray-900 text-gray-900",
+    "Brasil": "border-green-700 text-green-700",
     "Saúde": "border-green-600 text-green-600",
     "Esporte": "border-orange-500 text-orange-500",
     "Conceição da Barra": "border-blue-600 text-blue-600",

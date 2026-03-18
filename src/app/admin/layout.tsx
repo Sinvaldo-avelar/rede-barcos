@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Nova Notícia", icon: PlusCircle, path: "/admin/noticias/nova" },
     { name: "Gerenciar Postagens", icon: FileText, path: "/admin/noticias" },
     { name: "Transmissão Ao Vivo", icon: Video, path: "/admin/ao-vivo" },
-    { name: "Mídia e Rádio", icon: Radio, path: "/admin/midia" },
+    { name: "Mídia e Rádio", icon: Radio, path: "/midia" },
   ];
 
   // Tela de carregamento enquanto verifica se o jornalista está logado
@@ -78,7 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex min-h-screen bg-[#eaf5f1]">
       {/* SIDEBAR */}
-      <aside className="w-56 md:w-56 w-16 bg-linear-to-b from-[#002f5a] to-[#003d73] text-slate-100 flex flex-col fixed inset-0 h-screen min-h-0 shadow-2xl z-50 border-r border-[#d4af37]/30 overflow-y-auto">
+      <aside className="w-16 md:w-56 bg-linear-to-b from-[#002f5a] to-[#003d73] text-slate-100 flex flex-col fixed inset-0 h-screen min-h-0 shadow-2xl z-50 border-r border-[#d4af37]/30 overflow-y-auto">
         <div className="p-8 border-b border-white/10">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#d4af37] rounded-lg flex items-center justify-center text-[#003d73] font-black text-xl shadow-lg shadow-[#d4af37]/30">

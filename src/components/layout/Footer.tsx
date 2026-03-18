@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 
 export function Footer() {
-  const editorias = ['Cidades', 'Politica', 'Saude', 'Esportes', 'Economia'];
+  const editorias = ['Cidades', 'Politica', 'Brasil', 'Esportes', 'Economia'];
 
   return (
     <footer className="bg-[#001a33] text-white pt-20 pb-10 border-t-4 border-[#d4af37]">

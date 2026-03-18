@@ -15,19 +15,20 @@ export default function NovoBanner() {
   // Estados do Formulário
   const [nome, setNome] = useState("");
   const [linkDestino, setLinkDestino] = useState("");
-  const [posicao, setPosicao] = useState<"top" | "middle">("top");
+  const [posicao, setPosicao] = useState<"top" | "middle" | "bottom">("top");
   const [imagemUrl, setImagemUrl] = useState(""); 
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   type BannerPayload = {
+    [key: string]: string | undefined;
     nome?: string;
     titulo?: string;
     nome_banner?: string;
     imagem_url?: string;
     imagem?: string;
     url_imagem?: string;
-    posicao?: "top" | "middle";
+    posicao?: "top" | "middle" | "bottom";
     link_url?: string;
     link_destino?: string;
     url?: string;
@@ -241,7 +242,7 @@ export default function NovoBanner() {
 
           <div>
             <label className="block text-[10px] font-bold uppercase text-slate-400 mb-2 tracking-widest">Posição do Banner</label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
                 type="button"
                 onClick={() => setPosicao("top")}
@@ -255,6 +256,13 @@ export default function NovoBanner() {
                 className={`px-4 py-3 rounded-xl border-2 font-bold text-sm transition-all ${posicao === "middle" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"}`}
               >
                 Meio (dentro da home)
+              </button>
+              <button
+                type="button"
+                onClick={() => setPosicao("bottom")}
+                className={`px-4 py-3 rounded-xl border-2 font-bold text-sm transition-all ${posicao === "bottom" ? "border-blue-600 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500 hover:border-slate-300"}`}
+              >
+                Final (após cards)
               </button>
             </div>
           </div>
