@@ -37,11 +37,11 @@ export function RadioDock() {
   }
 
   return (
-    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-xs z-100 
-                    flex flex-col xl:items-center gap-1 p-2 md:p-3 
+    <div className="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-1rem)] max-w-65 md:max-w-70 xl:w-29.5 xl:max-w-none z-100 
+            flex flex-col xl:items-center gap-1 p-2 md:p-2.5 xl:p-2 
                     bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl 
-                    rounded-[30px] xl:rounded-[45px] border border-slate-200 dark:border-white/10 shadow-2xl transition-all duration-500
-                    xl:fixed xl:top-1/2 xl:right-0 xl:-translate-y-1/2">
+                    rounded-3xl xl:rounded-4xl border border-slate-200 dark:border-white/10 shadow-2xl transition-all duration-500
+            xl:fixed xl:top-1/2 xl:bottom-auto xl:left-auto xl:right-4 xl:translate-x-0 xl:-translate-y-1/2">
       
       {/* 🎙️ CHAMADA: Fica ao lado no mobile e em cima no PC */}
       <div className="flex flex-row xl:flex-col items-center justify-center gap-1 mb-0.5 px-1">
@@ -52,14 +52,14 @@ export function RadioDock() {
       </div>
 
       {/* 🚀 A MUDANÇA: flex-row no mobile | xl:flex-col no PC */}
-      <div className="flex flex-row xl:flex-col gap-2 md:gap-4">
+      <div className="flex flex-row xl:flex-col gap-2 md:gap-3 xl:gap-2.5">
         {RADIOS.map((radio) => (
           <div key={radio.id} className="relative group flex flex-col items-center">
             
             <button
               onClick={() => toggleRadio(radio)}
               /* Botão menor no mobile (h-14) para não esconder nada */
-              className={`relative h-11 w-11 md:h-18 md:w-18 xl:h-24 xl:w-24 rounded-full xl:rounded-4xl overflow-hidden transition-all duration-500 border-2 md:border-[3px] shadow-lg active:scale-95 bg-white
+              className={`relative h-10 w-10 md:h-16 md:w-16 xl:h-20 xl:w-20 rounded-full xl:rounded-3xl overflow-hidden transition-all duration-500 border-2 md:border-[3px] shadow-lg active:scale-95 bg-white
                 ${playingId === radio.id 
                   ? 'border-blue-500 scale-105' 
                   : 'border-slate-100 hover:border-blue-400'

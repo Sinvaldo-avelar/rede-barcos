@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AdBanner } from "@/components/layout/AdBanner";
 import { LiveBar } from "@/components/layout/LiveBar";
+import { RadioDock } from "@/components/ui/RadioDock";
 
 // 1. IMPORTANDO AS FONTES DO GOOGLE
 import { Inter, Playfair_Display } from 'next/font/google';
@@ -43,6 +44,7 @@ export default function RootLayout({
           <Header />
           <LiveBar />
           <AdBanner/>
+          <RadioDock />
           
           <main className="grow pt-8">
             {children}

@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AdBanner } from '@/components/layout/AdBanner';
-import { RadioDock } from '@/components/ui/RadioDock';
 
 type NewsItem = {
   id: string;
@@ -95,10 +94,6 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
             </h1>
           </Link>
 
-          <div className="mb-6 xl:hidden">
-            <RadioDock />
-          </div>
-
           <Link href={`/noticia/${mancheteTopo.id}`} className="group">
             <p className="text-gray-500 mt-2 text-lg line-clamp-2 font-medium">
               {mancheteTopo.subtitulo || ""}
@@ -173,11 +168,6 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                       alt={n.titulo || ''} 
                     />
                   </div>
-                  {n.legenda_imagem && (
-                    <p className="mt-1 text-[8px] leading-tight text-gray-500 line-clamp-2">
-                      {n.legenda_imagem}
-                    </p>
-                  )}
                 </div>
                 <h4 className="font-bold text-sm leading-tight group-hover:text-blue-800 transition-colors line-clamp-3">
                   {limparHtmlTotal(n.titulo || "")}
@@ -206,11 +196,6 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                         alt={n.titulo || ''} 
                       />
                    </div>
-                   {n.legenda_imagem && (
-                     <p className="text-[10px] text-gray-500 leading-tight -mt-1 line-clamp-2">
-                       {n.legenda_imagem}
-                     </p>
-                   )}
                    <div className="space-y-1">
                       <span className="text-[#00427a] font-bold text-[10px] uppercase block">{n.categoria}</span>
                       <h4 className="font-bold text-sm leading-snug text-slate-800 group-hover:text-blue-900 line-clamp-3">
