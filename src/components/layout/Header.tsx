@@ -58,7 +58,7 @@ export function Header() {
   return (
     <>
       <header className="w-full bg-[#eaf5f1]/95 backdrop-blur border-b border-[#cbdad5] sticky top-0 z-50 shadow-md">
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
           
           <div className="flex flex-row items-center justify-between py-2 lg:py-3 gap-2">
             
@@ -76,10 +76,10 @@ export function Header() {
             </div>
 
             {/* LOGO CENTRAL */}
-            <Link href="/" className="flex flex-row items-center group shrink-0 max-w-[80%] sm:max-w-none">
+            <Link href="/" className="flex flex-row items-center group shrink-0 max-w-[92%] sm:max-w-none">
               <div className="flex flex-col items-end shrink">
                 <div className="relative">
-                  <h1 className="text-[#003d73] font-sans text-[15px] xs:text-[18px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
+                  <h1 className="text-[#003d73] font-sans text-[17px] xs:text-[20px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
                     PORTAL DA <span className="text-transparent bg-clip-text bg-linear-to-r from-[#003d73] to-[#005bb5]">REDE BARCOS</span>
                   </h1>
 
@@ -88,13 +88,13 @@ export function Header() {
                 
                 <div className="flex items-center gap-1 mt-1 bg-white/40 px-2 py-0.5 rounded-full border border-[#003d73]/10 self-end">
                   <Zap className="w-2 md:w-3 h-2 md:h-3 text-[#d4af37] fill-[#d4af37]" />
-                  <p className="text-[#003d73] text-[6px] md:text-[8px] font-black uppercase tracking-widest">
+                  <p className="text-[#003d73] text-[7px] md:text-[8px] font-black uppercase tracking-widest">
                     Jornalismo com responsabilidade
                   </p>
                 </div>
               </div>
 
-              <div className="relative w-10 h-10 xs:w-12 xs:h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
+              <div className="relative w-12 h-12 xs:w-14 xs:h-14 sm:w-14 sm:h-14 md:w-20 md:h-20 ml-1 transition-all duration-500 group-hover:scale-110 shrink-0">
                  <Image 
                    src="/logor.png" 
                    alt="Logo Barco"
