@@ -60,7 +60,7 @@ export function Header() {
       <header className="w-full bg-[#eaf5f1]/95 backdrop-blur border-b border-[#cbdad5] sticky top-0 z-50 shadow-md">
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           
-          <div className="relative flex flex-row items-center justify-between py-2 lg:py-3 gap-2">
+          <div className="relative flex flex-row items-center justify-between py-3 lg:py-3 gap-2">
             
             {/* LOGO ESQUERDA */}
             <div className="flex-1 hidden lg:flex items-center justify-start">
@@ -78,9 +78,9 @@ export function Header() {
             {/* MENU MOBILE (ESQUERDA) */}
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden flex items-center gap-1 bg-[#003d73] text-white px-2 py-1.5 rounded-lg text-[9px] font-black uppercase shadow-md active:scale-95 transition-all"
+              className="lg:hidden flex items-center gap-2 bg-[#003d73] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-md active:scale-95 transition-all"
             >
-              {isMenuOpen ? <X className="w-3 h-3" /> : <Menu className="w-3 h-3" />}
+              {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               <span className="hidden xs:inline">Menu</span>
             </button>
 
@@ -88,7 +88,7 @@ export function Header() {
             <Link href="/" className="absolute left-1/2 -translate-x-1/2 flex flex-row items-center justify-center group w-max max-w-[calc(100%-100px)] xs:max-w-[calc(100%-90px)] sm:max-w-[calc(100%-80px)] lg:static lg:left-auto lg:translate-x-0 lg:max-w-none lg:w-auto lg:shrink-0">
               <div className="flex flex-col items-center md:items-end shrink">
                 <div className="relative">
-                  <h1 className="text-[#003d73] font-sans text-[16px] xs:text-[18px] md:text-[38px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
+                  <h1 className="text-[#003d73] font-sans text-[14px] xs:text-[16px] sm:text-[20px] md:text-[38px] lg:text-[44px] xl:text-[48px] font-[1000] uppercase italic tracking-tighter leading-none whitespace-nowrap">
                     PORTAL DA <span className="text-transparent bg-clip-text bg-linear-to-r from-[#003d73] to-[#005bb5]">REDE BARCOS</span>
                   </h1>
 
@@ -97,7 +97,7 @@ export function Header() {
                 
                 <div className="flex items-center gap-1 mt-1 bg-white/40 px-2 py-0.5 rounded-full border border-[#003d73]/10 self-center md:self-end">
                   <Zap className="w-2 md:w-3 h-2 md:h-3 text-[#d4af37] fill-[#d4af37]" />
-                  <p className="text-[#003d73] text-[6px] md:text-[8px] font-black uppercase tracking-widest">
+                  <p className="text-[#003d73] text-[6px] md:text-[8px] lg:text-[10px] xl:text-[11px] font-black uppercase tracking-widest">
                     Jornalismo com responsabilidade
                   </p>
                 </div>
@@ -147,20 +147,20 @@ export function Header() {
               {/* BUSCA MOBILE (DIREITA) */}
               <button 
                 onClick={() => setIsSearchOpen(true)}
-                className="lg:hidden p-1.5 bg-white text-[#003d73] rounded-lg shadow-md active:scale-95 transition-all border border-[#cbdad5]"
+                className="lg:hidden p-2 bg-white text-[#003d73] rounded-xl shadow-md active:scale-95 transition-all border border-[#cbdad5]"
               >
-                <Search className="w-3.5 h-3.5" />
+                <Search className="w-4 h-4" />
               </button>
             </div>
           </div>
 
           {/* MENU DE CATEGORIAS */}
-          <nav className={`${isMenuOpen ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-3 pb-4 lg:pb-2`}>
+          <nav className={`${isMenuOpen ? 'flex' : 'hidden'} lg:flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-3 pb-4 lg:pb-2 mt-2`}>
             {categories.map((cat) => (
               <Link 
                 key={cat.slug} 
                 href={`/categoria/${cat.slug}`} 
-                className="w-full lg:w-auto text-center bg-white/60 lg:bg-white/40 hover:bg-[#003d73] hover:text-white px-4 py-2 lg:py-1 rounded-lg text-[11px] lg:text-[10px] font-black uppercase tracking-widest text-[#003d73] transition-all border border-[#003d73]/5 lg:border-transparent"
+                className="w-full lg:w-auto text-center bg-white/60 lg:bg-white/40 hover:bg-[#003d73] hover:text-white px-4 py-2.5 lg:py-1 rounded-lg text-[12px] sm:text-[11px] font-black uppercase tracking-widest text-[#003d73] transition-all border border-[#003d73]/5 lg:border-transparent"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {cat.name}
