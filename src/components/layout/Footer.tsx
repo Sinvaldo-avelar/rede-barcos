@@ -69,7 +69,7 @@ export function Footer() {
             {[
               { icon: Facebook, url: 'https://www.facebook.com/redebarcos' },
               { icon: Instagram, url: 'https://www.instagram.com/redebarcos98.5?igsh=M3lwdjlicXpya3Vx' },
-              { icon: Youtube, url: '#' }
+              { icon: Youtube, url: 'https://www.youtube.com/@canalbarcostv' }
             ].map((social, idx) => (
               <Link 
                 key={idx} 
