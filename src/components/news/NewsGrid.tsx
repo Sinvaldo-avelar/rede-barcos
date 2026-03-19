@@ -120,13 +120,15 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
   );
 
   return (
-    <section className="max-w-7xl mx-auto px-4 py-6 font-(family-name:--font-inter)">
+    <section className="max-w-7xl mx-auto px-4 pt-0 md:pt-2 pb-6 font-(family-name:--font-inter)">
       
       {/* 1. MANCHETE DE TOPO (GERAL) */}
       {mancheteTopo && (
         <div className="mb-8 border-b border-gray-100 pb-8 text-left">
           <Link href={`/noticia/${mancheteTopo.id}`} className="group">
-            <span className="text-[#00427a] font-bold text-sm mb-2 block">{mancheteTopo.categoria}</span>
+            {mancheteTopo.categoria && mancheteTopo.categoria.trim().toLowerCase() !== 'geral' && (
+              <span className="text-[#00427a] font-bold text-sm mb-2 block">{mancheteTopo.categoria}</span>
+            )}
             <h1 className="font-headline normal-case text-2xl sm:text-2xl md:text-5xl font-black leading-tight text-slate-900 group-hover:text-gray-600 transition-colors">
               {normalizarCaixaFrase(mancheteTopo.titulo || "")}
             </h1>

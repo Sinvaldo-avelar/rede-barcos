@@ -78,7 +78,7 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
   const activeIndex = currentIndex % adsDoSlot.length;
 
   const bannerContent = (
-    <div className="relative w-full h-25 sm:h-37.5 md:h-55 overflow-hidden rounded-xl border border-gray-100 shadow-sm bg-gray-50">
+    <div className="relative w-full h-25 sm:h-37.5 lg:h-35 lg:max-w-285 lg:mx-auto overflow-hidden rounded-xl border border-transparent bg-transparent shadow-none lg:border-gray-100 lg:bg-gray-50 lg:shadow-sm">
       {adsDoSlot.map((ad, index) => (
         <a
           key={ad.id}
@@ -95,7 +95,7 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
               alt="Publicidade Comercial"
               fill
               unoptimized
-              className="object-cover md:object-fill"
+              className="object-contain md:object-fill"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200">
@@ -103,16 +103,13 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
             </div>
           )}
 
-          <div className="absolute bottom-2 right-2 bg-black/40 text-white text-[9px] px-2 py-0.5 rounded uppercase font-sans z-20">
-            Publicidade
-          </div>
         </a>
       ))}
     </div>
   );
 
   return (
-    <section className="w-full bg-white py-2 md:py-4">
+    <section className="w-full bg-white py-0 md:py-4">
       {inContainer ? (
         <div className="max-w-7xl mx-auto px-4">{bannerContent}</div>
       ) : (
