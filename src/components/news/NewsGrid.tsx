@@ -24,6 +24,24 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
     return html.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
   };
 
+  const normalizarCaixaFrase = (texto: string) => {
+    const limpo = limparHtmlTotal(texto);
+    if (!limpo) return "";
+
+    const letras = limpo.replace(/[^A-Za-zÀ-ÿ]/g, "");
+    if (!letras) return limpo;
+
+    const qtdMaiusculas = letras.replace(/[^A-ZÀ-Ý]/g, "").length;
+    const proporcaoMaiusculas = qtdMaiusculas / letras.length;
+
+    if (proporcaoMaiusculas < 0.8) {
+      return limpo;
+    }
+
+    const emMinusculo = limpo.toLocaleLowerCase("pt-BR");
+    return emMinusculo.replace(/(^\s*[a-zà-ÿ]|[.!?]\s+[a-zà-ÿ])/g, (trecho) => trecho.toLocaleUpperCase("pt-BR"));
+  };
+
   // --- LÓGICA DE ORGANIZAÇÃO (prioriza posicao, com fallback seguro) ---
   const getPosicao = (item: NewsItem) => {
     const valor = item?.posicao ?? item?.posicao_destaque ?? '';
@@ -108,14 +126,14 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
       {mancheteTopo && (
         <div className="mb-8 border-b border-gray-100 pb-8">
           <Link href={`/noticia/${mancheteTopo.id}`} className="group">
-            <span className="text-[#00427a] font-bold text-sm mb-2 block uppercase">{mancheteTopo.categoria}</span>
-            <h1 className="text-xl sm:text-2xl md:text-5xl font-serif font-black leading-tight text-slate-900 group-hover:text-gray-600 transition-colors">
-              {limparHtmlTotal(mancheteTopo.titulo || "")}
+            <span className="text-[#00427a] font-bold text-sm mb-2 block">{mancheteTopo.categoria}</span>
+            <h1 className="font-headline normal-case text-xl sm:text-2xl md:text-5xl font-black leading-tight text-slate-900 group-hover:text-gray-600 transition-colors">
+              {normalizarCaixaFrase(mancheteTopo.titulo || "")}
             </h1>
           </Link>
 
           <Link href={`/noticia/${mancheteTopo.id}`} className="group">
-            <p className="text-gray-500 mt-2 text-lg line-clamp-2 font-medium">
+            <p className="font-(family-name:--font-inter) text-gray-500 mt-2 text-lg line-clamp-2 font-medium">
               {mancheteTopo.subtitulo || ""}
             </p>
           </Link>
@@ -130,7 +148,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
           {colunaEsquerda.map(n => (
             <Link key={n.id} href={`/noticia/${n.id}`} className="block group border-b border-gray-50 pb-4 last:border-0">
               <span className="text-[#00427a] font-bold text-[11px] mb-1 block uppercase">{n.categoria}</span>
-              <h3 className="font-bold text-lg leading-tight group-hover:text-blue-700">{limparHtmlTotal(n.titulo || "")}</h3>
+              <h3 className="font-headline font-bold text-lg leading-tight group-hover:text-blue-700">{limparHtmlTotal(n.titulo || "")}</h3>
               <p className="text-xs text-gray-500 mt-2 line-clamp-2">{n.subtitulo || limparHtmlTotal(n.conteudo || "")}</p>
             </Link>
           ))}
@@ -164,7 +182,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                   <span className="text-[#00427a] font-bold text-[12px] sm:text-[13px] uppercase mb-1.5 block">
                     {sliderAtual.categoria}
                   </span>
-                  <h2 className="text-slate-900 text-xl sm:text-2xl font-bold leading-tight">
+                  <h2 className="font-headline text-slate-900 text-xl sm:text-2xl font-bold leading-tight">
                     {limparHtmlTotal(sliderAtual.titulo || "")}
                   </h2>
                 </Link>
@@ -189,7 +207,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                     />
                   </div>
                 </div>
-                <h4 className="font-bold text-sm leading-tight group-hover:text-blue-800 transition-colors line-clamp-3">
+                <h4 className="font-headline font-bold text-sm leading-tight group-hover:text-blue-800 transition-colors line-clamp-3">
                   {limparHtmlTotal(n.titulo || "")}
                 </h4>
               </div>
@@ -223,7 +241,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                           </div>
 
                           <div className="min-w-0">
-                            <h4 className="font-bold text-base leading-tight text-slate-800 group-hover:text-blue-900 line-clamp-3">
+                            <h4 className="font-headline font-bold text-base leading-tight text-slate-800 group-hover:text-blue-900 line-clamp-3">
                               {limparHtmlTotal(n.titulo || "")}
                             </h4>
                             <span className="text-[#00427a] font-bold text-[11px] mt-2 block uppercase line-clamp-1">
@@ -255,7 +273,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                           <span className="text-[#00427a] font-bold text-[11px] mt-1 block uppercase line-clamp-1">
                             {n.categoria || 'Geral'}
                           </span>
-                          <h4 className="font-bold text-base sm:text-lg lg:text-[26px] leading-[1.2] text-slate-800 group-hover:text-blue-900 line-clamp-3">
+                          <h4 className="font-headline font-bold text-base sm:text-lg lg:text-[26px] leading-[1.2] text-slate-800 group-hover:text-blue-900 line-clamp-3">
                             {limparHtmlTotal(n.titulo || "")}
                           </h4>
                         </div>

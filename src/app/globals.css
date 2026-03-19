@@ -4,6 +4,7 @@
   /* Vinculando as fontes do Next.js ao sistema do Tailwind v4 */
   --font-sans: var(--font-inter);
   --font-serif: var(--font-playfair);
+  --font-headline: Georgia, "Times New Roman", Times, serif;
 
   /* Cores personalizadas para o estilo editorial */
   --color-nyt-black: #121212;

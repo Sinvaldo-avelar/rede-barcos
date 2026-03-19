@@ -78,7 +78,7 @@ export function Header() {
             {/* MENU MOBILE (ESQUERDA) */}
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden flex items-center gap-2 bg-[#003d73] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase shadow-md active:scale-95 transition-all"
+              className="lg:hidden flex items-center gap-2 bg-[#003d73] text-white px-3 py-2 rounded-xl text-[10px] font-black shadow-md active:scale-95 transition-all"
             >
               {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               <span className="hidden xs:inline">Menu</span>
@@ -160,7 +160,7 @@ export function Header() {
               <Link 
                 key={cat.slug} 
                 href={`/categoria/${cat.slug}`} 
-                className="w-full lg:w-auto text-center bg-white/60 lg:bg-white/40 hover:bg-[#003d73] hover:text-white px-4 py-2.5 lg:py-1 rounded-lg text-[12px] sm:text-[11px] font-black uppercase tracking-widest text-[#003d73] transition-all border border-[#003d73]/5 lg:border-transparent"
+                className="w-full lg:w-auto text-center bg-white/60 lg:bg-white/40 hover:bg-[#003d73] hover:text-white px-4 py-2.5 lg:py-1 rounded-lg text-[12px] sm:text-[11px] font-black tracking-wide text-[#003d73] transition-all border border-[#003d73]/5 lg:border-transparent"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {cat.name}

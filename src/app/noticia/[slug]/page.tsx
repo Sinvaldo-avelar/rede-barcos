@@ -9,6 +9,7 @@ import { ArrowLeft, Calendar, User } from "lucide-react";
 interface Noticia {
   id: string; // Adicionei o ID aqui
   titulo: string;
+  subtitulo?: string;
   categoria: string;
   autor?: string;
   created_at: string;
@@ -93,9 +94,14 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
           <span className="text-blue-600 font-black uppercase tracking-widest text-[10px] px-2 py-1 bg-blue-50 rounded">
             {noticia.categoria}
           </span>
-          <h1 className="text-3xl md:text-5xl font-black leading-tight text-slate-900 mt-6 mb-6 tracking-tight">
+          <h1 className="font-headline text-3xl md:text-5xl font-black leading-tight text-slate-900 mt-6 mb-6 tracking-tight">
             {noticia.titulo.replace(/<[^>]*>?/gm, '')} {/* Limpando tags do título se houver */}
           </h1>
+          {noticia.subtitulo && (
+            <p className="font-(family-name:--font-inter) text-gray-600 mt-3 mb-6 text-sm sm:text-base md:text-lg font-normal leading-relaxed">
+              {noticia.subtitulo}
+            </p>
+          )}
           
           <div className="flex flex-wrap items-center gap-6 text-slate-500 text-sm border-y border-slate-100 py-4 font-bold uppercase text-[11px]">
             <div className="flex items-center gap-2">
