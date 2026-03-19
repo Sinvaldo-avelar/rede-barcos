@@ -112,7 +112,7 @@ export default function AoVivoPage() {
 
           <div className="p-5 md:p-8">
             {config?.is_active && embedUrl ? (
-              <div className="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl bg-black shadow-2xl">
+              <div className="mx-auto w-full overflow-hidden rounded-3xl md:rounded-lg bg-black shadow-2xl md:max-w-4xl">
                 <div className="aspect-video w-full">
                   {!startPlayer ? (
                     <button

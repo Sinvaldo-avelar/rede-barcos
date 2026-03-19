@@ -46,8 +46,8 @@ export function Footer() {
           </h4>
           <ul className="space-y-4 text-sm text-slate-300">
             {[
-              { icon: Mail, label: 'redacao@redebarcos.com.br' },
-              { icon: Phone, label: '(27) 99999-9999' },
+              { icon: Mail, label: 'redebarcos.com.br' },
+              { icon: Phone, label: '(27) 99976-9805' },
               { icon: MapPin, label: 'Conceição da Barra, ES' }
             ].map((item, idx) => (
               <li key={idx} className="flex items-center gap-3 group cursor-pointer">
@@ -66,13 +66,19 @@ export function Footer() {
             Siga-nos
           </h4>
           <div className="flex gap-4">
-            {[Facebook, Instagram, Youtube].map((Icon, idx) => (
+            {[
+              { icon: Facebook, url: 'https://www.facebook.com/redebarcos' },
+              { icon: Instagram, url: 'https://www.instagram.com/redebarcos98.5?igsh=M3lwdjlicXpya3Vx' },
+              { icon: Youtube, url: '#' }
+            ].map((social, idx) => (
               <Link 
                 key={idx} 
-                href="#" 
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-3 bg-white/5 border border-white/10 rounded-xl text-[#d4af37] hover:bg-[#d4af37] hover:text-[#001a33] hover:-translate-y-2 hover:shadow-[0_10px_20px_rgba(212,175,55,0.2)] transition-all duration-300"
               >
-                <Icon className="w-5 h-5" />
+                <social.icon className="w-5 h-5" />
               </Link>
             ))}
           </div>
