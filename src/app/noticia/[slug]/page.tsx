@@ -4,11 +4,13 @@ import { use, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, Calendar, User } from "lucide-react";
+import { ArrowLeft, Calendar, Share2, User } from "lucide-react";
 import DOMPurify from "dompurify";
+import SimpleToast from "@/components/ui/SimpleToast";
 
 interface Noticia {
   id: string; // Adicionei o ID aqui
+  slug?: string;
   titulo: string;
   subtitulo?: string;
   categoria: string;
@@ -25,6 +27,7 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
   
   const [noticia, setNoticia] = useState<Noticia | null>(null);
   const [carregando, setCarregando] = useState(true);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const normalizarQuebrasDeLinha = (texto?: string) =>
     (texto || "").replace(/\\n/g, "\n").replace(/\r\n?/g, "\n");
@@ -145,6 +148,29 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
 
   const fotoCapaUrl = noticia.foto_destaque || noticia.imagem_url;
 
+  const compartilharNoticia = async () => {
+    const noticiaPath = `/noticia/${noticia.slug || noticia.id || slug}`;
+    const urlAtual = new URL(noticiaPath, window.location.origin).toString();
+    const tituloNoticia = noticia.titulo.replace(/<[^>]*>?/gm, "");
+
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: tituloNoticia,
+          url: urlAtual,
+        });
+      } catch {
+      }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(urlAtual);
+      setToastMessage("Copiado para a área de transferência!");
+    } catch {
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white pb-20 font-(family-name:--font-inter)">
       <article className="max-w-4xl mx-auto px-4 pt-12">
@@ -170,14 +196,15 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
               <Calendar className="w-4 h-4" />
               <span>{new Date(noticia.created_at).toLocaleDateString('pt-BR')}</span>
             </div>
+            <button
+              type="button"
+              onClick={compartilharNoticia}
+              className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>Compartilhar</span>
+            </button>
           </div>
-          {noticia.subtitulo && (
-            <p className="font-(family-name:--font-inter) text-gray-600 mt-4 text-sm sm:text-base md:text-lg font-normal leading-relaxed">
-              <span className="whitespace-pre-line">
-                {normalizarQuebrasDeLinha(noticia.subtitulo)}
-              </span>
-            </p>
-          )}
           <h1 className="font-headline text-3xl md:text-5xl font-black leading-tight text-slate-900 mt-6 mb-6 tracking-tight">
             {noticia.titulo.replace(/<[^>]*>?/gm, '')} {/* Limpando tags do título se houver */}
           </h1>
@@ -202,6 +229,14 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
               )}
             </div>
           )}
+
+          {noticia.subtitulo && (
+            <p className="font-(family-name:--font-inter) text-gray-700 mt-8 text-base md:text-xl font-medium leading-relaxed">
+              <span className="whitespace-pre-line">
+                {normalizarQuebrasDeLinha(noticia.subtitulo)}
+              </span>
+            </p>
+          )}
         </header>
 
         {/* Renderizando o HTML do editor de texto com espaçamento editorial */}
@@ -211,6 +246,12 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
         />
 
       </article>
+
+      <SimpleToast
+        message={toastMessage}
+        variant="success"
+        onClose={() => setToastMessage(null)}
+      />
     </main>
   );
 }

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import SimpleToast from "@/components/ui/SimpleToast";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
@@ -20,6 +21,7 @@ export default function GerenciarNoticias() {
 
   type NoticiaItem = {
     id: string;
+    slug?: string;
     titulo?: string;
     imagem_url?: string;
     created_at: string;
@@ -31,6 +33,8 @@ export default function GerenciarNoticias() {
   const [carregando, setCarregando] = useState(true);
   const [busca, setBusca] = useState("");
   const [filtroPosicao, setFiltroPosicao] = useState("todas");
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVariant, setToastVariant] = useState<"success" | "error" | "warning">("success");
 
   const normalizarTexto = (valor: string) =>
     (valor || "")
@@ -87,8 +91,15 @@ export default function GerenciarNoticias() {
   async function handleDeletar(id: string) {
     if (confirm("Tem certeza que deseja excluir esta notícia? Esta ação não pode ser desfeita.")) {
       const { error } = await supabase.from("noticias").delete().eq("id", id);
-      if (error) alert("Erro ao deletar");
-      else fetchNoticias(); // Atualiza a lista
+      if (error) {
+        setToastVariant("error");
+        setToastMessage("Erro ao deletar");
+      }
+      else {
+        setToastVariant("success");
+        setToastMessage("Notícia excluída com sucesso!");
+        fetchNoticias(); // Atualiza a lista
+      }
     }
   }
 
@@ -227,7 +238,7 @@ export default function GerenciarNoticias() {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-center gap-2">
                         <Link 
-                          href={`/noticia/${item.id}`} // Supondo que você tenha essa rota pública
+                          href={`/noticia/${item.slug || item.id}`}
                           target="_blank"
                           className="p-2 text-[#003d73]/45 hover:text-[#003d73] hover:bg-[#eaf5f1] rounded-lg transition-all"
                           title="Visualizar no site"
@@ -257,6 +268,12 @@ export default function GerenciarNoticias() {
           </table>
         </div>
       </div>
+
+      <SimpleToast
+        message={toastMessage}
+        variant={toastVariant}
+        onClose={() => setToastMessage(null)}
+      />
     </div>
   );
 }

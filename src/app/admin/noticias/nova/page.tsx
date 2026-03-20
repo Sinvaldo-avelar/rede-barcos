@@ -6,8 +6,9 @@ import { supabase } from "@/lib/supabaseClient";
 import { uploadImageToSupabase } from "@/lib/upload";
 import ImageEditorModal from "@/components/ui/ImageEditorModal";
 import MediaGalleryModal from "@/components/ui/MediaGalleryModal";
+import SimpleToast from "@/components/ui/SimpleToast";
 import { useRouter } from "next/navigation";
-import { Save, ArrowLeft, Image as ImageIcon, Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2, UploadCloud, Tag, LayoutDashboard, Sparkles } from "lucide-react";
+import { Save, ArrowLeft, Image as ImageIcon, Bold, Italic, List, ListOrdered, Quote, Heading1, Heading2, UploadCloud, Tag, LayoutDashboard, Sparkles, Trash2 } from "lucide-react";
 import Link from "next/link";
 import DOMPurify from "dompurify";
 
@@ -23,7 +24,7 @@ import TipTapTableHeader from '@tiptap/extension-table-header';
 import type { Editor } from '@tiptap/react';
 
 type CropContexto = "capa" | "conteudo";
-type AIAction = "improve" | "summarize" | "generate_seo" | "command";
+type AIAction = "improve" | "summarize" | "generate_seo" | "command" | "generate_tags";
 
 const MenuBar = ({
   editor,
@@ -94,8 +95,10 @@ export default function NovaNoticia() {
   const [openGaleriaContexto, setOpenGaleriaContexto] = useState<CropContexto | null>(null);
   const [conteudoPreview, setConteudoPreview] = useState("<p>Comece a escrever o conteúdo da matéria aqui...</p>");
   const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
   const [comandoIA, setComandoIA] = useState("Escreva uma notícia completa baseada nestes fatos:");
+  const [tagsSugeridas, setTagsSugeridas] = useState<string[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastVariant, setToastVariant] = useState<"success" | "error" | "warning">("success");
 
   useEffect(() => { setIsMounted(true); }, []);
 
@@ -217,9 +220,9 @@ export default function NovaNoticia() {
       }
 
       setCropState(null);
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'erro desconhecido';
-      alert('Erro no upload: ' + message);
+    } catch {
+      setToastVariant("error");
+      setToastMessage("Erro na IA");
     } finally { setUploading(false); }
   }
 
@@ -247,23 +250,33 @@ export default function NovaNoticia() {
     const textoBase = (textoSelecionado || textoCompleto).trim();
 
     if (!textoBase) {
-      alert("Escreva um conteúdo antes de usar a IA.");
+      setToastVariant("error");
+      setToastMessage("Preencha os campos");
       return;
     }
 
     if (action === "command" && !comandoIA.trim()) {
-      alert("Informe um comando para IA.");
+      setToastVariant("error");
+      setToastMessage("Preencha os campos");
       return;
     }
 
     try {
       setAiLoading(true);
-      setAiError(null);
-
       const response = await fetch("/api/ai/editor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, text: textoBase, titulo, subtitulo, categoria, customCommand: comandoIA }),
+        body: JSON.stringify({
+          action,
+          text: textoBase,
+          titulo,
+          subtitulo,
+          categoria,
+          customCommand:
+            action === "generate_tags"
+              ? "Gere 5 tags de SEO separadas apenas por vírgulas"
+              : comandoIA,
+        }),
       });
 
       const result = await response.json();
@@ -279,6 +292,27 @@ export default function NovaNoticia() {
         return;
       }
 
+      if (action === "generate_tags") {
+        const tags = Array.isArray(result?.data?.tags)
+          ? result.data.tags.map((item: unknown) => String(item || "").trim()).filter(Boolean).slice(0, 5)
+          : [];
+
+        if (tags.length === 0) {
+          throw new Error("A IA não retornou tags válidas.");
+        }
+
+        setTagsSugeridas(tags);
+        try {
+          await navigator.clipboard.writeText(tags.join(", "));
+          setToastVariant("success");
+          setToastMessage("Tags copiadas!");
+        } catch {
+          setToastVariant("error");
+          setToastMessage("Falha ao copiar");
+        }
+        return;
+      }
+
       const novoTexto = String(result?.data?.text || "").trim();
       if (!novoTexto) {
         throw new Error("A IA não retornou texto.");
@@ -286,6 +320,8 @@ export default function NovaNoticia() {
 
       if (action === "command") {
         editor.commands.setContent(textoParaHtml(novoTexto), false);
+        setToastVariant("success");
+        setToastMessage("Matéria gerada!");
       } else if (textoSelecionado) {
         editor
           .chain()
@@ -296,19 +332,28 @@ export default function NovaNoticia() {
       } else {
         editor.commands.setContent(textoParaHtml(novoTexto), false);
       }
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Erro ao usar IA.";
-      setAiError(message);
-      alert(message);
+    } catch {
+      setToastVariant("error");
+      setToastMessage("Erro na IA");
     } finally {
       setAiLoading(false);
     }
   }
 
+  function handleLimparEditor() {
+    setTitulo("");
+    setTagsSugeridas([]);
+    editor?.commands.setContent("<p></p>", false);
+    setConteudoPreview("<p></p>");
+    setToastVariant("warning");
+    setToastMessage("Campos limpos para uma nova notícia!");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!editor || !titulo || !subtitulo) {
-        alert("Por favor, preencha o Título e o Subtítulo.");
+      setToastVariant("error");
+      setToastMessage("Preencha os campos");
         return;
     }
 
@@ -329,7 +374,10 @@ export default function NovaNoticia() {
       posicao: posicao 
     }]);
 
-    if (error) { alert("Erro ao salvar: " + error.message); } 
+    if (error) {
+      setToastVariant("error");
+      setToastMessage("Erro na IA");
+    }
     else { router.push("/admin/noticias"); router.refresh(); }
     setCarregando(false);
   }
@@ -381,15 +429,37 @@ export default function NovaNoticia() {
                 onChange={(e) => setComandoIA(e.target.value)}
               />
               <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => handleAiAction("command")}
-                  disabled={aiLoading}
-                  className="inline-flex items-center gap-2 bg-slate-900 hover:bg-black text-white px-4 py-2 rounded-xl font-bold text-xs disabled:opacity-50"
-                >
-                  <Sparkles size={14} /> Executar Comando IA
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleAiAction("generate_tags")}
+                    disabled={aiLoading}
+                    className="inline-flex items-center gap-2 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 px-4 py-2 rounded-xl font-bold text-xs disabled:opacity-50"
+                  >
+                    Gerar e Copiar Tags
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleAiAction("command")}
+                    disabled={aiLoading}
+                    className="inline-flex items-center gap-2 bg-slate-900 hover:bg-black text-white px-4 py-2 rounded-xl font-bold text-xs disabled:opacity-50"
+                  >
+                    <Sparkles size={14} /> Executar Comando IA
+                  </button>
+                </div>
               </div>
+              {tagsSugeridas.length > 0 && (
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {tagsSugeridas.map((tagItem, index) => (
+                    <span
+                      key={`${tagItem}-${index}`}
+                      className="inline-flex items-center rounded-full bg-blue-50 border border-blue-200 text-blue-700 px-3 py-1 text-xs font-bold"
+                    >
+                      {tagItem}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* POSIÇÃO E CATEGORIA */}
@@ -502,9 +572,6 @@ export default function NovaNoticia() {
             <div className="bg-white">
               <EditorContent editor={editor} />
             </div>
-            {aiError && (
-              <p className="px-6 pb-4 text-xs font-semibold text-rose-600">IA: {aiError}</p>
-            )}
             {aiLoading && (
               <p className="px-6 pb-4 text-xs font-semibold text-blue-600">Processando com IA...</p>
             )}
@@ -550,7 +617,14 @@ export default function NovaNoticia() {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={handleLimparEditor}
+            className="bg-amber-500 hover:bg-amber-600 text-white px-5 py-3 rounded-2xl font-black flex items-center gap-2 transition-all shadow-lg shadow-amber-500/20 active:scale-95"
+          >
+            <Trash2 size={18} /> Limpar Editor
+          </button>
           <button 
             type="submit" disabled={carregando || uploading}
             className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-12 py-5 rounded-2xl font-black flex items-center gap-3 transition-all shadow-xl shadow-blue-600/20 active:scale-95"
@@ -579,6 +653,12 @@ export default function NovaNoticia() {
           await abrirCropComArquivo(file, openGaleriaContexto);
         }}
         disabled={uploading}
+      />
+
+      <SimpleToast
+        message={toastMessage}
+        variant={toastVariant}
+        onClose={() => setToastMessage(null)}
       />
     </div>
   );

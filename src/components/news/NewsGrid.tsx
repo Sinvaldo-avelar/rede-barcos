@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { AdBanner } from '@/components/layout/AdBanner';
+import { Share2 } from 'lucide-react';
+import SimpleToast from '@/components/ui/SimpleToast';
 
 type NewsItem = {
   id: string;
@@ -19,6 +21,8 @@ type NewsItem = {
 };
 
 export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const limparHtmlTotal = (html: string) => {
     if (!html) return "";
     return html.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
@@ -110,6 +114,29 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
   const [sliderIndex, setSliderIndex] = useState(0);
   const sliderAtual = paraOSlider[sliderIndex];
 
+  const getNoticiaPath = (item: NewsItem) => `/noticia/${item.slug || item.id}`;
+
+  const compartilharNoticia = async (item: NewsItem) => {
+    if (typeof window === 'undefined') return;
+
+    const url = new URL(getNoticiaPath(item), window.location.origin).toString();
+    const title = limparHtmlTotal(item.titulo || 'Notícia');
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch {
+      }
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      setToastMessage('Copiado para a área de transferência!');
+    } catch {
+    }
+  };
+
   useEffect(() => {
     if (paraOSlider.length <= 1) return;
     const timer = setInterval(() => {
@@ -123,12 +150,23 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
   );
 
   return (
+    <>
     <section className="max-w-7xl mx-auto px-4 pt-0 md:pt-2 pb-6 font-(family-name:--font-inter)">
       
       {/* 1. MANCHETE DE TOPO (GERAL) */}
       {mancheteTopo && (
         <div className="mb-8 border-b border-gray-100 pb-8 text-left">
-          <Link href={`/noticia/${mancheteTopo.id}`} className="group">
+          <div className="mb-2 flex items-center justify-end">
+            <button
+              type="button"
+              aria-label="Compartilhar notícia"
+              onClick={() => compartilharNoticia(mancheteTopo)}
+              className="text-slate-400 hover:text-blue-600 transition-colors"
+            >
+              <Share2 className="w-4 h-4" />
+            </button>
+          </div>
+          <Link href={getNoticiaPath(mancheteTopo)} className="group">
             {mancheteTopo.categoria && mancheteTopo.categoria.trim().toLowerCase() !== 'geral' && (
               <span className="text-[#00427a] font-bold text-sm mb-2 block">{mancheteTopo.categoria}</span>
             )}
@@ -137,7 +175,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
             </h1>
           </Link>
 
-          <Link href={`/noticia/${mancheteTopo.id}`} className="group">
+          <Link href={getNoticiaPath(mancheteTopo)} className="group">
             <p className="font-(family-name:--font-inter) text-gray-500 mt-2 text-lg font-medium leading-relaxed text-justify">
               <span className="whitespace-pre-line">
                 {normalizarQuebrasDeLinha(mancheteTopo.subtitulo)}
@@ -153,11 +191,25 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
         {/* COLUNA ESQUERDA (MATÉRIA ESCRITA - SÓ TEXTO) */}
         <div className="order-3 lg:order-1 lg:col-span-3 space-y-8">
           {colunaEsquerda.map(n => (
-            <Link key={n.id} href={`/noticia/${n.id}`} className="block group border-b border-gray-50 pb-4 last:border-0">
-              <span className="text-[#00427a] font-bold text-[11px] mb-1 block uppercase">{n.categoria}</span>
-              <h3 className="font-headline font-bold text-lg leading-tight group-hover:text-blue-700">{limparHtmlTotal(n.titulo || "")}</h3>
-              <p className="text-xs text-gray-500 mt-2 line-clamp-2">{n.subtitulo || limparHtmlTotal(n.conteudo || "")}</p>
-            </Link>
+            <div key={n.id} className="border-b border-gray-50 pb-4 last:border-0">
+              <div className="mb-2 flex items-start justify-between gap-2">
+                <Link href={getNoticiaPath(n)} className="block group flex-1 min-w-0">
+                  <span className="text-[#00427a] font-bold text-[11px] mb-1 block uppercase">{n.categoria}</span>
+                </Link>
+                <button
+                  type="button"
+                  aria-label="Compartilhar notícia"
+                  onClick={() => compartilharNoticia(n)}
+                  className="shrink-0 text-slate-400 hover:text-blue-600 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
+              </div>
+              <Link href={getNoticiaPath(n)} className="block group">
+                <h3 className="font-headline font-bold text-lg leading-tight group-hover:text-blue-700">{limparHtmlTotal(n.titulo || "")}</h3>
+                <p className="text-xs text-gray-500 mt-2 line-clamp-2">{n.subtitulo || limparHtmlTotal(n.conteudo || "")}</p>
+              </Link>
+            </div>
           ))}
         </div>
 
@@ -169,7 +221,7 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                 {paraOSlider.map((item, index) => (
                   <Link
                     key={item.id}
-                    href={`/noticia/${item.id}`}
+                    href={getNoticiaPath(item)}
                     className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
                       index === sliderIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
                     }`}
@@ -185,14 +237,26 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
               </div>
 
               {sliderAtual && (
-                <Link href={`/noticia/${sliderAtual.id}`} className="block mt-3 sm:mt-4">
-                  <span className="text-[#00427a] font-bold text-[12px] sm:text-[13px] uppercase mb-1.5 block">
-                    {sliderAtual.categoria}
-                  </span>
-                  <h2 className="font-headline text-slate-900 text-xl sm:text-2xl font-bold leading-tight">
-                    {limparHtmlTotal(sliderAtual.titulo || "")}
-                  </h2>
-                </Link>
+                <div className="mt-3 sm:mt-4">
+                  <div className="mb-1.5 flex items-center justify-end">
+                    <button
+                      type="button"
+                      aria-label="Compartilhar notícia"
+                      onClick={() => compartilharNoticia(sliderAtual)}
+                      className="text-slate-400 hover:text-blue-600 transition-colors"
+                    >
+                      <Share2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <Link href={getNoticiaPath(sliderAtual)} className="block">
+                    <span className="text-[#00427a] font-bold text-[12px] sm:text-[13px] uppercase mb-1.5 block">
+                      {sliderAtual.categoria}
+                    </span>
+                    <h2 className="font-headline text-slate-900 text-xl sm:text-2xl font-bold leading-tight">
+                      {limparHtmlTotal(sliderAtual.titulo || "")}
+                    </h2>
+                  </Link>
+                </div>
               )}
             </>
           )}
@@ -201,24 +265,38 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
         {/* COLUNA DIREITA (ASSUNTOS COM FOTOS PEQUENAS) */}
         <div className="order-3 lg:order-3 lg:col-span-3 space-y-6">
           {colunaDireita.map(n => (
-            <Link key={n.id} href={`/noticia/${n.id}`} className="group block border-b border-gray-100 pb-6 last:border-0">
-              <span className="text-[#00427a] font-bold text-[11px] mb-3 block uppercase">{n.categoria}</span>
-              <div className="flex gap-4">
-                <div className="w-20 shrink-0">
-                  <div className="relative w-20 h-20 bg-gray-100 overflow-hidden rounded-sm">
-                    <Image 
-                      src={n.imagem_url || ''} 
-                      fill
-                      className="object-cover" 
-                      alt={n.titulo || ''} 
-                    />
-                  </div>
-                </div>
-                <h4 className="font-headline font-bold text-sm leading-tight group-hover:text-blue-800 transition-colors line-clamp-3">
-                  {limparHtmlTotal(n.titulo || "")}
-                </h4>
+            <div key={n.id} className="border-b border-gray-100 pb-6 last:border-0">
+              <div className="mb-3 flex items-start justify-between gap-2">
+                <Link href={getNoticiaPath(n)} className="group block flex-1 min-w-0">
+                  <span className="text-[#00427a] font-bold text-[11px] block uppercase">{n.categoria}</span>
+                </Link>
+                <button
+                  type="button"
+                  aria-label="Compartilhar notícia"
+                  onClick={() => compartilharNoticia(n)}
+                  className="shrink-0 text-slate-400 hover:text-blue-600 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                </button>
               </div>
-            </Link>
+              <Link href={getNoticiaPath(n)} className="group block">
+                <div className="flex gap-4">
+                  <div className="w-20 shrink-0">
+                    <div className="relative w-20 h-20 bg-gray-100 overflow-hidden rounded-sm">
+                      <Image 
+                        src={n.imagem_url || ''} 
+                        fill
+                        className="object-cover" 
+                        alt={n.titulo || ''} 
+                      />
+                    </div>
+                  </div>
+                  <h4 className="font-headline font-bold text-sm leading-tight group-hover:text-blue-800 transition-colors line-clamp-3">
+                    {limparHtmlTotal(n.titulo || "")}
+                  </h4>
+                </div>
+              </Link>
+            </div>
           ))}
         </div>
       </div>
@@ -236,27 +314,39 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                 {bloco.compactas.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {bloco.compactas.map((n) => (
-                      <Link key={`compacta-${n.id}`} href={`/noticia/${n.id}`} className="group block border-b border-gray-100 pb-4 last:border-0">
-                        <div className="flex items-start gap-3.5">
-                          <div className="relative w-34 h-22 lg:w-36 lg:h-24 bg-gray-100 overflow-hidden rounded-xl shrink-0">
-                            <Image
-                              src={n.imagem_url || ''}
-                              fill
-                              className="object-cover"
-                              alt={n.titulo || ''}
-                            />
-                          </div>
-
-                          <div className="min-w-0">
-                            <h4 className="font-headline font-bold text-base leading-tight text-slate-800 group-hover:text-blue-900 line-clamp-3">
-                              {limparHtmlTotal(n.titulo || "")}
-                            </h4>
-                            <span className="text-[#00427a] font-bold text-[11px] mt-2 block uppercase line-clamp-1">
-                              {n.categoria || 'Geral'}
-                            </span>
-                          </div>
+                      <div key={`compacta-${n.id}`} className="border-b border-gray-100 pb-4 last:border-0">
+                        <div className="mb-2 flex items-center justify-end">
+                          <button
+                            type="button"
+                            aria-label="Compartilhar notícia"
+                            onClick={() => compartilharNoticia(n)}
+                            className="text-slate-400 hover:text-blue-600 transition-colors"
+                          >
+                            <Share2 className="w-4 h-4" />
+                          </button>
                         </div>
-                      </Link>
+                        <Link href={getNoticiaPath(n)} className="group block">
+                          <div className="flex items-start gap-3.5">
+                            <div className="relative w-34 h-22 lg:w-36 lg:h-24 bg-gray-100 overflow-hidden rounded-xl shrink-0">
+                              <Image
+                                src={n.imagem_url || ''}
+                                fill
+                                className="object-cover"
+                                alt={n.titulo || ''}
+                              />
+                            </div>
+
+                            <div className="min-w-0">
+                              <h4 className="font-headline font-bold text-base leading-tight text-slate-800 group-hover:text-blue-900 line-clamp-3">
+                                {limparHtmlTotal(n.titulo || "")}
+                              </h4>
+                              <span className="text-[#00427a] font-bold text-[11px] mt-2 block uppercase line-clamp-1">
+                                {n.categoria || 'Geral'}
+                              </span>
+                            </div>
+                          </div>
+                        </Link>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -264,27 +354,39 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
                 {bloco.maiores.length > 0 && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {bloco.maiores.map((n) => (
-                      <Link key={`maior-${n.id}`} href={`/noticia/${n.id}`} className="group block">
-                        <div className="space-y-3">
-                          <div
-                            className="relative w-full bg-gray-100 overflow-hidden rounded-2xl"
-                            style={{ aspectRatio: '12 / 5' }}
+                      <div key={`maior-${n.id}`} className="group block">
+                        <div className="mb-2 flex items-center justify-end">
+                          <button
+                            type="button"
+                            aria-label="Compartilhar notícia"
+                            onClick={() => compartilharNoticia(n)}
+                            className="text-slate-400 hover:text-blue-600 transition-colors"
                           >
-                            <Image
-                              src={n.imagem_url || ''}
-                              fill
-                              className="object-cover transition-all duration-300"
-                              alt={n.titulo || ''}
-                            />
-                          </div>
-                          <span className="text-[#00427a] font-bold text-[11px] mt-1 block uppercase line-clamp-1">
-                            {n.categoria || 'Geral'}
-                          </span>
-                          <h4 className="font-headline font-bold text-base sm:text-lg lg:text-[26px] leading-[1.2] text-slate-800 group-hover:text-blue-900 line-clamp-3">
-                            {limparHtmlTotal(n.titulo || "")}
-                          </h4>
+                            <Share2 className="w-4 h-4" />
+                          </button>
                         </div>
-                      </Link>
+                        <Link href={getNoticiaPath(n)} className="block">
+                          <div className="space-y-3">
+                            <div
+                              className="relative w-full bg-gray-100 overflow-hidden rounded-2xl"
+                              style={{ aspectRatio: '12 / 5' }}
+                            >
+                              <Image
+                                src={n.imagem_url || ''}
+                                fill
+                                className="object-cover transition-all duration-300"
+                                alt={n.titulo || ''}
+                              />
+                            </div>
+                            <span className="text-[#00427a] font-bold text-[11px] mt-1 block uppercase line-clamp-1">
+                              {n.categoria || 'Geral'}
+                            </span>
+                            <h4 className="font-headline font-bold text-base sm:text-lg lg:text-[26px] leading-[1.2] text-slate-800 group-hover:text-blue-900 line-clamp-3">
+                              {limparHtmlTotal(n.titulo || "")}
+                            </h4>
+                          </div>
+                        </Link>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -301,5 +403,12 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
       )}
 
     </section>
+
+    <SimpleToast
+      message={toastMessage}
+      variant="success"
+      onClose={() => setToastMessage(null)}
+    />
+    </>
   );
 }

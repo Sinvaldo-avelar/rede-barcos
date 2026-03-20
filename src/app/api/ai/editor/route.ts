@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-type AIAction = "improve" | "summarize" | "generate_seo" | "command";
+type AIAction = "improve" | "summarize" | "generate_seo" | "command" | "generate_tags";
 
 type EditorAIPayload = {
   action?: AIAction;
@@ -34,6 +34,11 @@ function buildPrompt(payload: Required<Pick<EditorAIPayload, "action" | "text">>
 
   if (payload.action === "command") {
     return `Você é um jornalista profissional em português do Brasil. Siga estritamente o comando do jornalista abaixo usando apenas os fatos fornecidos. Não invente fatos, nomes, datas ou números. Se o comando pedir uma notícia completa, escreva a matéria completa com linguagem jornalística clara e objetiva. Retorne apenas o texto final, sem markdown e sem comentários extras.\n\n${context}\n\nComando do jornalista:\n${payload.customCommand || ""}\n\nFatos/base:\n${payload.text}`;
+  }
+
+  if (payload.action === "generate_tags") {
+    const comandoTags = payload.customCommand?.trim() || "Gere 5 tags de SEO separadas apenas por vírgulas";
+    return `Você é um editor de SEO para notícias em português do Brasil. Execute exatamente o comando abaixo e retorne apenas uma linha, sem explicações.\n\nComando:\n${comandoTags}\n\nRegras:\n- Use somente fatos presentes no texto\n- Entregue exatamente 5 tags\n- Separe apenas por vírgulas\n\n${context}\n\nMatéria:\n${payload.text}`;
   }
 
   return `Você é editor-chefe e especialista em SEO jornalístico em português do Brasil. Com base no texto abaixo, gere: (1) um TÍTULO chamativo e factual com até 65 caracteres; (2) uma META DESCRIPTION para SEO com 140 a 160 caracteres, clara e atrativa. Não invente fatos. Responda estritamente em JSON no formato: {"titulo":"...","metaDescription":"..."}.\n\n${context}\n\nTexto:\n${payload.text}`;
@@ -75,7 +80,7 @@ export async function POST(req: NextRequest) {
   const action = body.action;
   const text = body.text?.trim() || "";
 
-  if (!action || !["improve", "summarize", "generate_seo", "command"].includes(action)) {
+  if (!action || !["improve", "summarize", "generate_seo", "command", "generate_tags"].includes(action)) {
     return NextResponse.json({ error: "Ação inválida." }, { status: 400 });
   }
 
@@ -143,6 +148,30 @@ export async function POST(req: NextRequest) {
         metaDescription: (parsed?.metaDescription || "").trim(),
       },
     });
+  }
+
+  if (action === "generate_tags") {
+    const parsed = safeParseJson<{ tags?: string[] }>(modelText);
+
+    let tags = (parsed?.tags || [])
+      .map((item) => String(item || "").trim())
+      .filter(Boolean);
+
+    if (tags.length === 0) {
+      tags = modelText
+        .replace(/\n/g, ",")
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    tags = tags.slice(0, 5);
+
+    if (tags.length === 0) {
+      return NextResponse.json({ error: "IA não retornou tags válidas." }, { status: 502 });
+    }
+
+    return NextResponse.json({ data: { tags, text: tags.join(", ") } });
   }
 
   return NextResponse.json({ data: { text: modelText.trim() } });

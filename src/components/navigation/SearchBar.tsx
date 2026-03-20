@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabaseClient';
 
 type SearchResult = {
   id: string;
+  slug?: string;
   titulo?: string;
   subtitulo?: string;
   categoria?: string;
@@ -41,7 +42,7 @@ export function SearchBar({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
 
       const { data, error } = await supabase
         .from("noticias")
-        .select("id, titulo, subtitulo, categoria")
+        .select("id, slug, titulo, subtitulo, categoria")
         .order("created_at", { ascending: false })
         .limit(200);
 
@@ -108,7 +109,7 @@ export function SearchBar({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
           {resultados.map((noticia) => (
             <Link 
               key={noticia.id} 
-              href={`/noticia/${noticia.id}`}
+              href={`/noticia/${noticia.slug || noticia.id}`}
               onClick={() => {
                 setQuery(""); // Limpa a busca ao clicar
                 onClose();
