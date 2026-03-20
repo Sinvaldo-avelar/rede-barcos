@@ -24,6 +24,9 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
     return html.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
   };
 
+  const normalizarQuebrasDeLinha = (texto?: string) =>
+    (texto || '').replace(/\\n/g, '\n').replace(/\r\n?/g, '\n');
+
   const normalizarCaixaFrase = (texto: string) => {
     const limpo = limparHtmlTotal(texto);
     if (!limpo) return "";
@@ -135,8 +138,10 @@ export default function NewsGrid({ noticias = [] }: { noticias?: NewsItem[] }) {
           </Link>
 
           <Link href={`/noticia/${mancheteTopo.id}`} className="group">
-            <p className="font-(family-name:--font-inter) text-gray-500 mt-2 text-lg line-clamp-2 font-medium leading-relaxed text-justify">
-              {mancheteTopo.subtitulo || ""}
+            <p className="font-(family-name:--font-inter) text-gray-500 mt-2 text-lg font-medium leading-relaxed text-justify">
+              <span className="whitespace-pre-line">
+                {normalizarQuebrasDeLinha(mancheteTopo.subtitulo)}
+              </span>
             </p>
           </Link>
         </div>

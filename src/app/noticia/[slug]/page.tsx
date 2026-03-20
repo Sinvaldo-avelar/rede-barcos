@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Calendar, User } from "lucide-react";
+import DOMPurify from "dompurify";
 
 interface Noticia {
   id: string; // Adicionei o ID aqui
@@ -13,6 +14,7 @@ interface Noticia {
   categoria: string;
   autor?: string;
   created_at: string;
+  foto_destaque?: string;
   imagem_url?: string;
   legenda_imagem?: string;
   conteudo: string;
@@ -23,6 +25,50 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
   
   const [noticia, setNoticia] = useState<Noticia | null>(null);
   const [carregando, setCarregando] = useState(true);
+
+  const normalizarQuebrasDeLinha = (texto?: string) =>
+    (texto || "").replace(/\\n/g, "\n").replace(/\r\n?/g, "\n");
+
+  const escaparHtml = (texto: string) =>
+    texto
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/\"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  const formatarConteudoParaRender = (conteudo?: string) => {
+    const normalizado = normalizarQuebrasDeLinha(conteudo);
+    if (!normalizado) return "";
+
+    const temHtml = /<\/?[a-z][\s\S]*>/i.test(normalizado);
+    if (temHtml) return normalizado;
+
+    return normalizado
+      .split(/\n{2,}/)
+      .map((bloco) => `<p>${escaparHtml(bloco).replace(/\n/g, "<br />")}</p>`)
+      .join("");
+  };
+
+  const DOMINIOS_IMAGEM_CONFIAVEIS = ["supabase.co"];
+  const RESTRINGIR_IMAGEM_A_DOMINIOS_CONFIAVEIS = false;
+
+  const isImagemSrcPermitido = (src: string) => {
+    if (!src?.startsWith("https://")) return false;
+
+    if (!RESTRINGIR_IMAGEM_A_DOMINIOS_CONFIAVEIS) {
+      return true;
+    }
+
+    try {
+      const { hostname } = new URL(src);
+      return DOMINIOS_IMAGEM_CONFIAVEIS.some(
+        (dominio) => hostname === dominio || hostname.endsWith(`.${dominio}`)
+      );
+    } catch {
+      return false;
+    }
+  };
 
   useEffect(() => {
     async function carregarNoticia() {
@@ -78,6 +124,27 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
     </div>
   );
 
+  DOMPurify.removeHooks("uponSanitizeAttribute");
+  DOMPurify.addHook("uponSanitizeAttribute", (currentNode, data) => {
+    if (
+      currentNode.tagName?.toLowerCase() === "img" &&
+      data.attrName?.toLowerCase() === "src" &&
+      !isImagemSrcPermitido(data.attrValue)
+    ) {
+      data.keepAttr = false;
+    }
+  });
+
+  const conteudoSanitizado = DOMPurify.sanitize(formatarConteudoParaRender(noticia.conteudo), {
+    ALLOWED_TAGS: ["p", "br", "strong", "em", "u", "h2", "h3", "ul", "ol", "li", "a", "img"],
+    ALLOWED_ATTR: ["href", "target", "rel", "src", "alt", "title"],
+    ALLOW_DATA_ATTR: false,
+    ALLOW_ARIA_ATTR: false,
+  });
+  DOMPurify.removeHooks("uponSanitizeAttribute");
+
+  const fotoCapaUrl = noticia.foto_destaque || noticia.imagem_url;
+
   return (
     <main className="min-h-screen bg-white pb-20 font-(family-name:--font-inter)">
       <article className="max-w-4xl mx-auto px-4 pt-12">
@@ -94,16 +161,7 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
           <span className="text-blue-600 font-black uppercase tracking-widest text-[10px] px-2 py-1 bg-blue-50 rounded">
             {noticia.categoria}
           </span>
-          <h1 className="font-headline text-3xl md:text-5xl font-black leading-tight text-slate-900 mt-6 mb-6 tracking-tight">
-            {noticia.titulo.replace(/<[^>]*>?/gm, '')} {/* Limpando tags do título se houver */}
-          </h1>
-          {noticia.subtitulo && (
-            <p className="font-(family-name:--font-inter) text-gray-600 mt-3 mb-6 text-sm sm:text-base md:text-lg font-normal leading-relaxed">
-              {noticia.subtitulo}
-            </p>
-          )}
-          
-          <div className="flex flex-wrap items-center gap-6 text-slate-500 text-sm border-y border-slate-100 py-4 font-bold uppercase text-[11px]">
+          <div className="flex flex-wrap items-center gap-6 text-slate-500 text-sm border-y border-slate-100 py-4 mt-6 font-bold uppercase text-[11px]">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
               <span>Por <strong className="text-slate-900">{noticia.autor || "Redação"}</strong></span>
@@ -113,36 +171,43 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
               <span>{new Date(noticia.created_at).toLocaleDateString('pt-BR')}</span>
             </div>
           </div>
+          {noticia.subtitulo && (
+            <p className="font-(family-name:--font-inter) text-gray-600 mt-4 text-sm sm:text-base md:text-lg font-normal leading-relaxed">
+              <span className="whitespace-pre-line">
+                {normalizarQuebrasDeLinha(noticia.subtitulo)}
+              </span>
+            </p>
+          )}
+          <h1 className="font-headline text-3xl md:text-5xl font-black leading-tight text-slate-900 mt-6 mb-6 tracking-tight">
+            {noticia.titulo.replace(/<[^>]*>?/gm, '')} {/* Limpando tags do título se houver */}
+          </h1>
+
+          {fotoCapaUrl && (
+            <div className="mt-6">
+              <div className="relative w-full aspect-video overflow-hidden rounded-sm bg-slate-100 shadow-sm">
+                <Image
+                  src={fotoCapaUrl}
+                  alt={noticia.titulo}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 896px) 100vw, 896px"
+                  priority
+                  unoptimized
+                />
+              </div>
+              {noticia.legenda_imagem && (
+                <p className="mt-2 text-xs text-slate-500 leading-tight">
+                  {noticia.legenda_imagem}
+                </p>
+              )}
+            </div>
+          )}
         </header>
 
-        {noticia.imagem_url && (
-          <div className="mb-10">
-            <div className="relative aspect-video w-full overflow-hidden rounded-sm bg-slate-100 shadow-sm">
-              <Image 
-                src={noticia.imagem_url} 
-                alt={noticia.titulo}
-                fill
-                className="object-cover"
-                sizes="(max-width: 896px) 100vw, 896px"
-                priority
-                unoptimized
-              />
-            </div>
-            {noticia.legenda_imagem && (
-              <p className="mt-2 text-xs text-slate-500 leading-tight">
-                {noticia.legenda_imagem}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* MUDANÇA AQUI: Renderizando o HTML do editor de texto com segurança */}
+        {/* Renderizando o HTML do editor de texto com espaçamento editorial */}
         <div 
-          className="prose prose-slate prose-lg max-w-none font-(family-name:--font-playfair) leading-relaxed text-slate-800
-                     prose-p:mb-6 prose-p:leading-relaxed
-                     prose-strong:text-slate-900
-                     prose-img:rounded-lg"
-          dangerouslySetInnerHTML={{ __html: noticia.conteudo }}
+          className="news-content mt-8 max-w-none space-y-4 font-(family-name:--font-playfair) leading-relaxed text-slate-800"
+          dangerouslySetInnerHTML={{ __html: conteudoSanitizado }}
         />
 
       </article>

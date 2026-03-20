@@ -56,7 +56,7 @@ export default function NewsCard({ noticia, priority = false }: NewsCardProps) {
     "Brasil": "border-green-700 text-green-700",
     "Saúde": "border-green-600 text-green-600",
     "Esporte": "border-orange-500 text-orange-500",
-    "Conceição da Barra": "border-blue-600 text-blue-600",
+    "Espírito Santo": "border-purple-600 text-purple-600",
     "Geral": "border-blue-800 text-blue-800"
   };
 

@@ -47,10 +47,10 @@ export function Header() {
   }, []);
   
   const categories = [
-    { name: 'Brasil', slug: 'Brasil' },
+    { name: 'Espírito Santo', slug: 'espirito-santo' },
     { name: 'Geral', slug: 'geral' },
-    { name: 'Conceição da Barra', slug: 'conceicao-da-barra' },
     { name: 'Política', slug: 'politica' },
+    { name: 'Brasil', slug: 'Brasil' },
     { name: 'Polícia', slug: 'policia' },
     { name: 'Esportes', slug: 'esportes' },
   ];

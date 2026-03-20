@@ -46,4 +46,57 @@
   .news-image-hover {
     @apply transition-opacity duration-300 hover:opacity-90;
   }
+
+  .news-content {
+    line-height: 1.8;
+  }
+
+  .news-content > * {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .news-content p,
+  .news-content div {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .news-content p + p {
+    margin-top: 1.5rem;
+  }
+
+  .news-content h2,
+  .news-content h3,
+  .news-content h4 {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+    color: var(--color-slate-900);
+  }
+
+  .news-content ul,
+  .news-content ol {
+    margin: 1.25rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .news-content li + li {
+    margin-top: 0.5rem;
+  }
+
+  .news-content strong {
+    font-weight: 700;
+    color: var(--color-slate-900);
+  }
+
+  .news-content img {
+    width: 100%;
+    max-width: 52rem;
+    height: auto;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    display: block;
+    margin: 1.5rem auto;
+  }
 }
