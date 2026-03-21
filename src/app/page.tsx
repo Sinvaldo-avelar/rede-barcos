@@ -1,3 +1,7 @@
+import Manutencao from "./manutencao";
+
+// REVERSÃO: Para voltar ao fluxo normal, descomente o bloco abaixo e remova o componente de Manutenção. Assim, a volta é instantânea.
+/*
 "use client"
 
 import { useEffect, useState } from "react";
@@ -33,7 +37,7 @@ export default function Home() {
     } else if (data) {
       setNoticias(data);
     }
-    
+
     setCarregando(false);
   }
 
@@ -45,18 +49,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-slate-950">
       <div className="pb-36 md:pb-20 pt-0 md:pt-2 px-4 md:px-8 max-w-7xl mx-auto">
-        
-        {carregando ? (
-          /* SAI: Aquela frase simples de carregando
-             ENTRA: O esqueleto com o desenho do seu site (3 colunas, slider, etc)
-          */
-          <SkeletonGrid /> 
-        ) : (
-          /* Quando carrega, entra o NewsGrid com as fotos coloridas */
-          <NewsGrid noticias={noticias} />
-        )}
-
+        {carregando ? <SkeletonGrid /> : <NewsGrid noticias={noticias} />}
       </div>
     </main>
   );
+}
+*/
+
+export default function Home() {
+  return <Manutencao />;
 }
