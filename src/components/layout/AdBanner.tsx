@@ -30,19 +30,26 @@ export function AdBanner({ slot = 'top', inContainer = true }: AdBannerProps) {
 
   useEffect(() => {
     async function carregarBanners() {
-      // Buscamos os banners ordenando pelo ID mais recente primeiro
-      const { data, error } = await supabase
-        .from('banners')
-        .select('*')
-        .order('id', { ascending: false });
-      
-      if (error) {
-        setAds([]);
-        return;
-      }
+      try {
+        // Buscamos os banners ordenando pelo ID mais recente primeiro
+        const { data, error } = await supabase
+          .from('banners')
+          .select('*')
+          .order('id', { ascending: false });
 
-      if (data && data.length > 0) {
-        setAds(data);
+        if (error) {
+          setAds([]);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          setAds(data);
+          return;
+        }
+
+        setAds([]);
+      } catch (error) {
+        setAds([]);
       }
     }
     carregarBanners();

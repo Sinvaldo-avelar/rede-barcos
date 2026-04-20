@@ -14,30 +14,39 @@ export default function AoVivoPage() {
 
   useEffect(() => {
     async function carregarLive() {
-      const { data, error } = await supabase
-        .from("configuracoes_live")
-        .select("*")
-        .order("id", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from("configuracoes_live")
+          .select("*")
+          .order("id", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      if (!error && data) {
-        const nextConfig = data as LiveConfig;
-        setConfig((prev) => {
-          if (
-            prev?.id === nextConfig.id &&
-            prev?.is_active === nextConfig.is_active &&
-            prev?.video_url === nextConfig.video_url &&
-            prev?.descricao === nextConfig.descricao
-          ) {
-            return prev;
-          }
+        if (!error && data) {
+          const nextConfig = data as LiveConfig;
+          setConfig((prev) => {
+            if (
+              prev?.id === nextConfig.id &&
+              prev?.is_active === nextConfig.is_active &&
+              prev?.video_url === nextConfig.video_url &&
+              prev?.descricao === nextConfig.descricao
+            ) {
+              return prev;
+            }
 
-          return nextConfig;
-        });
+            return nextConfig;
+          });
+          return;
+        }
+
+        if (error) {
+          console.error("Falha ao carregar live:", error.message);
+        }
+      } catch (error) {
+        console.error("Erro de rede ao carregar live:", error);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     carregarLive();

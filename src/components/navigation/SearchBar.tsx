@@ -40,15 +40,19 @@ export function SearchBar({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
       setBuscando(true);
       const termoBuscaNormalizado = normalizarTexto(queryLimpa);
 
-      const { data, error } = await supabase
-        .from("noticias")
-        .select("id, slug, titulo, subtitulo, categoria")
-        .order("created_at", { ascending: false })
-        .limit(200);
+      try {
+        const { data, error } = await supabase
+          .from("noticias")
+          .select("id, slug, titulo, subtitulo, categoria")
+          .order("created_at", { ascending: false })
+          .limit(200);
 
-      if (error) {
-        setResultados([]);
-      } else {
+        if (error) {
+          console.error("Falha ao buscar noticias:", error.message);
+          setResultados([]);
+          return;
+        }
+
         const filtrados = (data || []).filter((noticia) => {
           const titulo = normalizarTexto(noticia.titulo || "");
           const subtitulo = normalizarTexto(noticia.subtitulo || "");
@@ -62,9 +66,12 @@ export function SearchBar({ isOpen, onClose }: { isOpen: boolean, onClose: () =>
         });
 
         setResultados(filtrados);
+      } catch (error) {
+        console.error("Erro de rede na busca:", error);
+        setResultados([]);
+      } finally {
+        setBuscando(false);
       }
-
-      setBuscando(false);
     }, 300);
 
     return () => clearTimeout(timer);

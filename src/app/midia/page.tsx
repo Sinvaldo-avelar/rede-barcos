@@ -19,14 +19,29 @@ export default function MidiaPage() {
     let ativo = true;
 
     (async () => {
-      const { data, error } = await supabase
-        .from("noticias")
-        .select("titulo, imagem_url, created_at")
-        .not("imagem_url", "eq", "")
-        .order("created_at", { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from("noticias")
+          .select("titulo, imagem_url, created_at")
+          .not("imagem_url", "eq", "")
+          .order("created_at", { ascending: false });
 
-      if (!error && ativo) {
-        setFotos((data || []) as FotoMidia[]);
+        if (!error && ativo) {
+          setFotos((data || []) as FotoMidia[]);
+          return;
+        }
+
+        if (error) {
+          console.error("Falha ao carregar midia:", error.message);
+        }
+        if (ativo) {
+          setFotos([]);
+        }
+      } catch (error) {
+        console.error("Erro de rede ao carregar midia:", error);
+        if (ativo) {
+          setFotos([]);
+        }
       }
     })();
 

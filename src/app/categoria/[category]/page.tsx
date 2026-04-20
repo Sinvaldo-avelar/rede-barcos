@@ -30,24 +30,32 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
   useEffect(() => {
     async function carregarPorCategoria() {
       setCarregando(true);
-      
-      // Decodifica acentos e espaços da URL para bater com o banco
-      const categoriaFormatada = decodeURIComponent(categoryParam);
 
-      // Busca no Supabase
-      const { data, error } = await supabase
-        .from("noticias")
-        .select("*")
-        .ilike("categoria", categoriaFormatada) // ilike ignora maiúsculas/minúsculas
-        .order("created_at", { ascending: false });
+      try {
+        // Decodifica acentos e espaços da URL para bater com o banco
+        const categoriaFormatada = decodeURIComponent(categoryParam);
 
-      if (!error && data) {
-        setNoticiasFiltradas(data as Noticia[]);
-      } else {
+        // Busca no Supabase
+        const { data, error } = await supabase
+          .from("noticias")
+          .select("*")
+          .ilike("categoria", categoriaFormatada) // ilike ignora maiúsculas/minúsculas
+          .order("created_at", { ascending: false });
+
+        if (!error && data) {
+          setNoticiasFiltradas(data as Noticia[]);
+        } else {
+          if (error) {
+            console.error("Falha ao carregar categoria:", error.message);
+          }
+          setNoticiasFiltradas([]);
+        }
+      } catch (error) {
+        console.error("Erro de rede ao carregar categoria:", error);
         setNoticiasFiltradas([]);
+      } finally {
+        setCarregando(false);
       }
-      
-      setCarregando(false);
     }
 
     if (categoryParam) {

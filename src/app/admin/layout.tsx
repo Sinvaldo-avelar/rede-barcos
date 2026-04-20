@@ -24,14 +24,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // --- TRAVA DE SEGURANÇA ---
   useEffect(() => {
     const verificarSessao = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+          router.push("/login");
+        } else {
+          setAutenticado(true);
+        }
+      } catch (error) {
+        console.error("Erro ao verificar sessao:", error);
         router.push("/login");
-      } else {
-        setAutenticado(true);
+      } finally {
+        setCarregando(false);
       }
-      setCarregando(false);
     };
 
     verificarSessao();
@@ -39,15 +45,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // --- FUNÇÃO DE LOGOUT (SAIR) ---
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      alert("Erro ao sair do painel. Tente novamente.");
-      return;
-    }
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        alert("Erro ao sair do painel. Tente novamente.");
+        return;
+      }
 
-    setAutenticado(false);
-    router.replace("/login");
-    router.refresh();
+      setAutenticado(false);
+      router.replace("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Erro de rede ao sair:", error);
+      alert("Erro de conexao ao sair do painel. Tente novamente.");
+    }
   };
 
   const isActive = (path: string) => pathname === path;

@@ -18,16 +18,23 @@ export default function LoginPage() {
     setCarregando(true);
     setErro("");
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: senha,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha,
+      });
 
-    if (error) {
-      setErro("E-mail ou senha incorretos.");
-      setCarregando(false);
-    } else {
+      if (error) {
+        setErro("E-mail ou senha incorretos.");
+        return;
+      }
+
       router.push("/admin"); // Se der certo, manda para o Dashboard
+    } catch (error) {
+      console.error("Erro de rede no login:", error);
+      setErro("Falha de conexão. Tente novamente.");
+    } finally {
+      setCarregando(false);
     }
   };
 

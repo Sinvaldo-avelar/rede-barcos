@@ -60,13 +60,26 @@ export default function MediaGalleryModal({
   useEffect(() => {
     async function carregarFotos() {
       setLoading(true);
-      const { data } = await supabase
-        .from("noticias")
-        .select("titulo, imagem_url, created_at")
-        .not("imagem_url", "eq", "")
-        .order("created_at", { ascending: false });
-      setFotos((data || []) as FotoMidia[]);
-      setLoading(false);
+      try {
+        const { data, error } = await supabase
+          .from("noticias")
+          .select("titulo, imagem_url, created_at")
+          .not("imagem_url", "eq", "")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Falha ao carregar galeria:", error.message);
+          setFotos([]);
+          return;
+        }
+
+        setFotos((data || []) as FotoMidia[]);
+      } catch (error) {
+        console.error("Erro de rede ao carregar galeria:", error);
+        setFotos([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
     if (open) {

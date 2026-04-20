@@ -77,31 +77,39 @@ export default function NoticiaPage({ params }: { params: Promise<{ slug: string
     async function carregarNoticia() {
       setCarregando(true);
 
-      // Primeiro tenta buscar pelo ID (caso mais comum, pois slug não é gerado ainda)
-      let { data, error } = await supabase
-        .from("noticias")
-        .select("*")
-        .eq("id", slug)
-        .maybeSingle();
-
-      // Se não encontrou pelo ID, tenta pelo slug (para quando slug for implementado)
-      if (!data && !error) {
-        const resultado = await supabase
+      try {
+        // Primeiro tenta buscar pelo ID (caso mais comum, pois slug não é gerado ainda)
+        let { data, error } = await supabase
           .from("noticias")
           .select("*")
-          .eq("slug", slug)
+          .eq("id", slug)
           .maybeSingle();
-        data = resultado.data;
-        error = resultado.error;
-      }
 
-      if (!error && data) {
-        setNoticia(data);
-      } else {
+        // Se não encontrou pelo ID, tenta pelo slug (para quando slug for implementado)
+        if (!data && !error) {
+          const resultado = await supabase
+            .from("noticias")
+            .select("*")
+            .eq("slug", slug)
+            .maybeSingle();
+          data = resultado.data;
+          error = resultado.error;
+        }
+
+        if (!error && data) {
+          setNoticia(data);
+        } else {
+          if (error) {
+            console.error("Falha ao carregar noticia:", error.message);
+          }
+          setNoticia(null);
+        }
+      } catch (error) {
+        console.error("Erro de rede ao carregar noticia:", error);
         setNoticia(null);
+      } finally {
+        setCarregando(false);
       }
-      
-      setCarregando(false);
     }
 
     if (slug) {

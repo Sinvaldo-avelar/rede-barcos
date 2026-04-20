@@ -1,7 +1,3 @@
-import Manutencao from "./manutencao";
-
-// REVERSÃO: Para voltar ao fluxo normal, descomente o bloco abaixo e remova o componente de Manutenção. Assim, a volta é instantânea.
-/*
 "use client"
 
 import { useEffect, useState } from "react";
@@ -27,18 +23,23 @@ export default function Home() {
   const [carregando, setCarregando] = useState(true);
 
   async function buscarNoticias() {
-    const { data, error } = await supabase
-      .from("noticias")
-      .select("*")
-      .order("id", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("noticias")
+        .select("*")
+        .order("id", { ascending: false });
 
-    if (error) {
+      if (error) {
+        setNoticias([]);
+        return;
+      }
+
+      setNoticias(data ?? []);
+    } catch {
       setNoticias([]);
-    } else if (data) {
-      setNoticias(data);
+    } finally {
+      setCarregando(false);
     }
-
-    setCarregando(false);
   }
 
   useEffect(() => {
@@ -53,9 +54,4 @@ export default function Home() {
       </div>
     </main>
   );
-}
-*/
-
-export default function Home() {
-  return <Manutencao />;
 }

@@ -72,13 +72,24 @@ export default function GerenciarNoticias() {
 
   async function fetchNoticias() {
     setCarregando(true);
-    const { data, error } = await supabase
-      .from("noticias")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("noticias")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (!error) setNoticias(data || []);
-    setCarregando(false);
+      if (!error) {
+        setNoticias(data || []);
+      } else {
+        console.error("Falha ao carregar noticias no admin:", error.message);
+        setNoticias([]);
+      }
+    } catch (error) {
+      console.error("Erro de rede ao carregar noticias no admin:", error);
+      setNoticias([]);
+    } finally {
+      setCarregando(false);
+    }
   }
 
   // Buscar notícias do banco
@@ -90,15 +101,21 @@ export default function GerenciarNoticias() {
   // Função para deletar notícia
   async function handleDeletar(id: string) {
     if (confirm("Tem certeza que deseja excluir esta notícia? Esta ação não pode ser desfeita.")) {
-      const { error } = await supabase.from("noticias").delete().eq("id", id);
-      if (error) {
-        setToastVariant("error");
-        setToastMessage("Erro ao deletar");
-      }
-      else {
+      try {
+        const { error } = await supabase.from("noticias").delete().eq("id", id);
+        if (error) {
+          setToastVariant("error");
+          setToastMessage("Erro ao deletar");
+          return;
+        }
+
         setToastVariant("success");
         setToastMessage("Notícia excluída com sucesso!");
         fetchNoticias(); // Atualiza a lista
+      } catch (error) {
+        console.error("Erro de rede ao deletar noticia:", error);
+        setToastVariant("error");
+        setToastMessage("Erro ao deletar");
       }
     }
   }

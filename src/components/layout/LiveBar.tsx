@@ -11,18 +11,26 @@ export function LiveBar() {
 
   useEffect(() => {
     async function carregarLive() {
-      const { data, error } = await supabase
-        .from("configuracoes_live")
-        .select("*")
-        .order("id", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from("configuracoes_live")
+          .select("*")
+          .order("id", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      if (!error && data) {
-        setConfig(data);
+        if (!error && data) {
+          setConfig(data);
+        } else if (error) {
+          // Ambiente sem conexão com Supabase: mantém barra oculta sem poluir o console.
+          setConfig(null);
+        }
+      } catch (error) {
+        // Falha de rede/host inválido não deve quebrar nem gerar stack visível ao usuário.
+        setConfig(null);
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     }
 
     carregarLive();

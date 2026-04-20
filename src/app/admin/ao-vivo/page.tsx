@@ -20,28 +20,32 @@ export default function AdminAoVivoPage() {
     async function carregarConfiguracao() {
       setLoading(true);
 
-      const { data, error } = await supabase
-        .from("configuracoes_live")
-        .select("*")
-        .order("id", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from("configuracoes_live")
+          .select("*")
+          .order("id", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      if (error) {
-        alert("Erro ao carregar configuração da live: " + error.message);
+        if (error) {
+          alert("Erro ao carregar configuração da live: " + error.message);
+          return;
+        }
+
+        if (data) {
+          const config = data as LiveConfig;
+          setConfigId(config.id ?? null);
+          setIsActive(Boolean(config.is_active));
+          setVideoUrl(config.video_url || "");
+          setDescricao(config.descricao || "");
+        }
+      } catch (error) {
+        console.error("Erro de rede ao carregar live no admin:", error);
+        alert("Falha de conexão ao carregar configuração da live.");
+      } finally {
         setLoading(false);
-        return;
       }
-
-      if (data) {
-        const config = data as LiveConfig;
-        setConfigId(config.id ?? null);
-        setIsActive(Boolean(config.is_active));
-        setVideoUrl(config.video_url || "");
-        setDescricao(config.descricao || "");
-      }
-
-      setLoading(false);
     }
 
     carregarConfiguracao();
@@ -51,59 +55,63 @@ export default function AdminAoVivoPage() {
     e.preventDefault();
     setSaving(true);
 
-    const payloadComDescricao = {
-      is_active: isActive,
-      video_url: videoUrl.trim() || null,
-      descricao: descricao.trim() || null,
-    };
-
-    let resultado = configId
-      ? await supabase.from("configuracoes_live").update(payloadComDescricao).eq("id", configId)
-      : await supabase.from("configuracoes_live").insert([payloadComDescricao]).select("id").single();
-
-    const colunaDescricaoInexistente = resultado.error?.message?.toLowerCase().includes("could not find")
-      && resultado.error?.message?.toLowerCase().includes("descricao");
-
-    if (colunaDescricaoInexistente) {
-      const payloadSemDescricao = {
+    try {
+      const payloadComDescricao = {
         is_active: isActive,
         video_url: videoUrl.trim() || null,
+        descricao: descricao.trim() || null,
       };
 
-      resultado = configId
-        ? await supabase.from("configuracoes_live").update(payloadSemDescricao).eq("id", configId)
-        : await supabase.from("configuracoes_live").insert([payloadSemDescricao]).select("id").single();
-    }
+      let resultado = configId
+        ? await supabase.from("configuracoes_live").update(payloadComDescricao).eq("id", configId)
+        : await supabase.from("configuracoes_live").insert([payloadComDescricao]).select("id").single();
 
-    if (resultado.error) {
-      alert("Erro ao salvar live: " + resultado.error.message);
-      setSaving(false);
-      return;
-    }
+      const colunaDescricaoInexistente = resultado.error?.message?.toLowerCase().includes("could not find")
+        && resultado.error?.message?.toLowerCase().includes("descricao");
 
-    if (!configId && resultado.data && "id" in resultado.data) {
-      setConfigId((resultado.data as { id: number | string }).id);
-    }
+      if (colunaDescricaoInexistente) {
+        const payloadSemDescricao = {
+          is_active: isActive,
+          video_url: videoUrl.trim() || null,
+        };
 
-    if (colunaDescricaoInexistente) {
-      alert("Live salva, mas a coluna 'descricao' ainda não existe no banco. Adicione essa coluna para ativar o texto personalizado.");
+        resultado = configId
+          ? await supabase.from("configuracoes_live").update(payloadSemDescricao).eq("id", configId)
+          : await supabase.from("configuracoes_live").insert([payloadSemDescricao]).select("id").single();
+      }
+
+      if (resultado.error) {
+        alert("Erro ao salvar live: " + resultado.error.message);
+        return;
+      }
+
+      if (!configId && resultado.data && "id" in resultado.data) {
+        setConfigId((resultado.data as { id: number | string }).id);
+      }
+
+      if (colunaDescricaoInexistente) {
+        alert("Live salva, mas a coluna 'descricao' ainda não existe no banco. Adicione essa coluna para ativar o texto personalizado.");
+        if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+          const bc = new BroadcastChannel("live-updates");
+          bc.postMessage({ type: "live-updated", at: Date.now() });
+          bc.close();
+        }
+        return;
+      }
+
       if (typeof window !== "undefined" && "BroadcastChannel" in window) {
         const bc = new BroadcastChannel("live-updates");
         bc.postMessage({ type: "live-updated", at: Date.now() });
         bc.close();
       }
+
+      alert("Configuração da transmissão atualizada com sucesso.");
+    } catch (error) {
+      console.error("Erro de rede ao salvar live no admin:", error);
+      alert("Falha de conexão ao salvar live.");
+    } finally {
       setSaving(false);
-      return;
     }
-
-    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
-      const bc = new BroadcastChannel("live-updates");
-      bc.postMessage({ type: "live-updated", at: Date.now() });
-      bc.close();
-    }
-
-    alert("Configuração da transmissão atualizada com sucesso.");
-    setSaving(false);
   }
 
   if (loading) {
